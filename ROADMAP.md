@@ -498,8 +498,8 @@ Public APIs should evolve carefully as adoption grows.
 
 The v0.2.0 milestone will be considered complete when the toolkit includes:
 
-* [ ] Cinematic Timeline Planner
-* [ ] Timeline validation
+* [x] Cinematic Timeline Planner
+* [x] Timeline validation
 * [ ] Music Video Structure Model
 * [ ] Musical section mapping
 * [ ] Vocal / instrumental scene metadata
