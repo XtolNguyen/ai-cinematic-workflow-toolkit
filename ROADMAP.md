@@ -508,7 +508,7 @@ The v0.2.0 milestone will be considered complete when the toolkit includes:
 * [ ] Configurable scene-duration policies
 * [x] Advanced continuity
 * [x] Continuity profiles
-* [ ] Global project constraints
+* [x] Global project constraints
 * [ ] Prompt profiles
 * [ ] Structured prompt sections
 * [x] Music video timeline validation
