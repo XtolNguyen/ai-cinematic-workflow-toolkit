@@ -62,6 +62,26 @@ The project follows a simple versioned release process. Versions may evolve towa
 - Music-video integration with complete project JSON export
 - Public Music Video Structure API
 - Automated unit and project integration tests for music-video structures
+- Advanced Continuity Profiles
+- Configurable required, optional, ignored, strict, warning-only, and allowed-change continuity fields
+- Scene-to-scene strict continuity locks
+- Warning-level continuity validation
+- Allowed intentional continuity transitions
+- Missing required continuity-field detection
+- Configurable missing-field severity
+- Structured advanced continuity issues with error and warning severity
+- Previous and current scene ID reporting for continuity issues
+- Previous and current continuity value reporting
+- Support for native Scene fields and arbitrary custom continuity metadata
+- Character identity continuity with order-insensitive character comparison
+- Camera shot, movement, and lens continuity support
+- Project-level advanced continuity validation
+- Serializable ContinuityProfile and validation results
+- Public Advanced Continuity API
+- Optional advanced continuity validation in complete project JSON exports
+- Backward compatibility with the existing basic continuity API
+- Coexistence of DurationPolicy and ContinuityProfile validation in project exports
+- Automated advanced continuity unit and project integration tests
   
 ### Fixed
 
