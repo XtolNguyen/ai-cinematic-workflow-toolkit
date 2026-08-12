@@ -506,8 +506,8 @@ The v0.2.0 milestone will be considered complete when the toolkit includes:
 * [x] Lip-sync metadata
 * [x] Lip-sync rules
 * [ ] Configurable scene-duration policies
-* [ ] Advanced continuity categories
-* [ ] Continuity profiles
+* [x] Advanced continuity
+* [x] Continuity profiles
 * [ ] Global project constraints
 * [ ] Prompt profiles
 * [ ] Structured prompt sections
