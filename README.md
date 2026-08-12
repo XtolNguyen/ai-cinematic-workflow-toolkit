@@ -11,6 +11,308 @@ The project is designed to help creators turn a story, screenplay, music track, 
 
 ## 🎬 Overview
 
+## 🚀 Quick Start
+
+AI Cinematic Workflow Toolkit is a Python toolkit for building structured AI-assisted cinematic projects with reusable scene models, validation, prompt generation, continuity analysis, negative-constraint processing, workflow execution, and portable JSON export.
+
+### Requirements
+
+* Python 3.10 or newer
+* Git
+* pip
+
+---
+
+## 📦 Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/XtolNguyen/ai-cinematic-workflow-toolkit.git
+cd ai-cinematic-workflow-toolkit
+```
+
+Create a virtual environment:
+
+```bash
+python -m venv .venv
+```
+
+Activate the environment.
+
+### Windows
+
+```bash
+.venv\Scripts\activate
+```
+
+### macOS / Linux
+
+```bash
+source .venv/bin/activate
+```
+
+Install the toolkit:
+
+```bash
+python -m pip install --upgrade pip
+python -m pip install -e .
+```
+
+For development and testing:
+
+```bash
+python -m pip install -e ".[dev]"
+```
+
+---
+
+## 🎥 Basic Usage
+
+A cinematic scene can be created with the public package API:
+
+```python
+from ai_cinematic_workflow import (
+    Camera,
+    Scene,
+    process_scene,
+)
+
+scene = Scene(
+    scene_id=1,
+    duration_seconds=15,
+    location="Neon cinematic performance stage",
+    camera=Camera(
+        shot="medium close-up",
+        movement="slow dolly in",
+        lens="50mm",
+    ),
+    characters=["Lead performer"],
+    performance="Natural emotional performance",
+    lighting="Soft cinematic lighting",
+    mood="Reflective",
+    negative_constraints=[
+        "Distorted Face",
+        "Extra Fingers",
+        "Camera Jitter",
+    ],
+)
+
+result = process_scene(scene)
+
+print(result.prompt)
+print(result.negative_prompt)
+```
+
+The workflow automatically performs:
+
+```text
+Scene Input
+    ↓
+Scene Validation
+    ↓
+Negative Constraint Normalization
+    ↓
+Cinematic Prompt Generation
+    ↓
+Structured Workflow Result
+```
+
+---
+
+## 🎬 Multi-Scene Projects
+
+Complete cinematic projects can contain multiple ordered scenes:
+
+```python
+from ai_cinematic_workflow import (
+    Camera,
+    CinematicProject,
+    ProjectMetadata,
+    Scene,
+    process_project,
+)
+
+project = CinematicProject(
+    metadata=ProjectMetadata(
+        title="Demo Project",
+        project_type="music-video",
+        language="en",
+        aspect_ratio="16:9",
+        frame_rate=24,
+    ),
+    scenes=[
+        Scene(
+            scene_id=1,
+            duration_seconds=15,
+            location="Performance stage",
+            camera=Camera(
+                shot="medium shot",
+                movement="slow dolly in",
+                lens="50mm",
+            ),
+            characters=["Lead performer"],
+            continuity={
+                "wardrobe": "black outfit",
+            },
+        ),
+        Scene(
+            scene_id=2,
+            duration_seconds=15,
+            location="Performance stage",
+            camera=Camera(
+                shot="close-up",
+                movement="slow push in",
+                lens="85mm",
+            ),
+            characters=["Lead performer"],
+            continuity={
+                "wardrobe": "black outfit",
+            },
+        ),
+    ],
+)
+
+results = process_project(project.scenes)
+
+for result in results:
+    print(result.prompt)
+```
+
+Consecutive scenes are automatically checked for potential continuity changes.
+
+---
+
+## 📄 Complete Project JSON Export
+
+A complete project can be processed and exported as portable JSON:
+
+```python
+from ai_cinematic_workflow.exporters.project_json_exporter import (
+    save_project_json,
+)
+
+save_project_json(
+    project,
+    "output/project.json",
+)
+```
+
+The exported JSON contains:
+
+* Project metadata
+* Project duration
+* Scene count
+* Raw scene data
+* Generated cinematic prompts
+* Normalized negative prompts
+* Continuity reports
+* Workflow validation results
+* Processing summary
+
+---
+
+## ▶️ Run the Example Project
+
+A runnable three-scene music-video demonstration is included:
+
+```bash
+python examples/music_video_project.py
+```
+
+The example demonstrates:
+
+* Project creation
+* Multi-scene processing
+* Cinematic prompt generation
+* Negative-prompt normalization
+* Scene-to-scene continuity detection
+* Complete project JSON export
+
+The example intentionally introduces a wardrobe change in Scene 3 so the continuity engine can demonstrate mismatch detection.
+
+Generated files are written locally to:
+
+```text
+examples/output/
+```
+
+---
+
+## 🧪 Running Tests
+
+Run the complete automated test suite:
+
+```bash
+pytest
+```
+
+The repository also uses GitHub Actions to automatically test supported Python versions.
+
+Current CI coverage includes:
+
+* Core scene validation
+* JSON serialization
+* Prompt generation
+* Negative-constraint validation
+* Continuity analysis
+* Workflow-engine processing
+* Cinematic project validation
+* Complete project JSON export
+* Runnable example validation
+
+---
+
+## 🏗 Current Architecture
+
+```text
+Creative / Production Input
+            ↓
+        Scene Model
+            ↓
+        Validation
+            ↓
+   Negative Processing
+            ↓
+   Continuity Analysis
+            ↓
+      Prompt Builder
+            ↓
+      Workflow Engine
+            ↓
+      Project Model
+            ↓
+       JSON Export
+            ↓
+Downstream AI / Production Tools
+```
+
+The core architecture is designed to remain platform-agnostic so platform-specific integrations can be added separately without tightly coupling the toolkit to one AI-video provider.
+
+---
+
+## ✅ Current Capabilities
+
+The current development version includes:
+
+* ✅ Structured cinematic Scene model
+* ✅ Camera model
+* ✅ Scene validation
+* ✅ Cinematic Prompt Builder
+* ✅ Negative Constraint Validator
+* ✅ Negative-prompt normalization and deduplication
+* ✅ Scene Continuity Validator
+* ✅ Multi-scene Workflow Engine
+* ✅ Cinematic Project model
+* ✅ Project-level validation
+* ✅ Scene and project JSON exporters
+* ✅ Runnable music-video example
+* ✅ Automated pytest suite
+* ✅ Multi-version GitHub Actions CI
+* ✅ Public Python package API
+
+Additional production tools are under active development.
+
 AI video production often requires many separate steps:
 
 * Story and concept analysis
