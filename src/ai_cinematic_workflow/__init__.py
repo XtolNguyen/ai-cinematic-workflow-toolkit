@@ -2,8 +2,8 @@
 AI Cinematic Workflow Toolkit.
 
 Open-source tools for structured cinematic scene planning,
-validation, continuity, prompt construction, project management,
-workflow processing, and portable export.
+validation, continuity, timeline planning, prompt construction,
+project management, workflow processing, and portable export.
 """
 
 from .continuity import (
@@ -27,6 +27,13 @@ from .prompt_builder import (
     build_cinematic_prompt,
 )
 from .scene import Camera, Scene
+from .timeline import (
+    TimelineEntry,
+    TimelineIssue,
+    TimelineResult,
+    build_timeline,
+    format_timestamp,
+)
 from .workflow import (
     WorkflowSceneResult,
     process_project,
@@ -48,6 +55,11 @@ __all__ = [
     "normalize_constraint",
     "validate_negative_constraints",
     "merge_negative_constraints",
+    "TimelineEntry",
+    "TimelineIssue",
+    "TimelineResult",
+    "build_timeline",
+    "format_timestamp",
     "WorkflowSceneResult",
     "process_scene",
     "process_project",
