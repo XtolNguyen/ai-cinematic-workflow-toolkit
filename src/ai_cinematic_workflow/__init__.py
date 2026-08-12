@@ -3,8 +3,8 @@ AI Cinematic Workflow Toolkit.
 
 Open-source tools for structured cinematic scene planning,
 validation, continuity, timeline planning, music-video structure,
-prompt construction, project management, workflow processing,
-and portable export.
+lip-sync policy resolution, prompt construction, project management,
+workflow processing, and portable export.
 """
 
 from .continuity import (
@@ -12,6 +12,12 @@ from .continuity import (
     compare_scenes,
     continuity_report,
     has_continuity_issues,
+)
+from .lip_sync import (
+    LipSyncPolicyResult,
+    normalize_lip_sync_mode,
+    resolve_lip_sync_policy,
+    resolve_music_video_lip_sync,
 )
 from .music_video import (
     MusicSection,
@@ -69,6 +75,10 @@ __all__ = [
     "MusicSection",
     "MusicVideoStructure",
     "normalize_music_token",
+    "LipSyncPolicyResult",
+    "normalize_lip_sync_mode",
+    "resolve_lip_sync_policy",
+    "resolve_music_video_lip_sync",
     "WorkflowSceneResult",
     "process_scene",
     "process_project",
