@@ -497,7 +497,7 @@ Public APIs should evolve carefully as adoption grows.
 # v0.2.0 Definition of Done
 
 The v0.2.0 milestone will be considered complete when the toolkit includes:
-
+* [x] Duration rules
 * [x] Cinematic Timeline Planner
 * [x] Timeline validation
 * [x] Music Video Structure Model
@@ -511,7 +511,7 @@ The v0.2.0 milestone will be considered complete when the toolkit includes:
 * [ ] Global project constraints
 * [ ] Prompt profiles
 * [ ] Structured prompt sections
-* [ ] Music-video timeline validation
+* [x] Music video timeline validation
 * [ ] Expanded project JSON export
 * [ ] Automated tests for all new core behavior
 * [ ] Updated runnable example
