@@ -8,9 +8,27 @@ The project follows a simple versioned release process. Versions may evolve towa
 
 ## [Unreleased]
 
+### Added
+
+- Cinematic Timeline Planner
+- Automatic scene start and end time calculation
+- Cumulative project timeline duration
+- Timeline gap detection
+- Timeline overlap detection
+- Scene-order validation
+- Duplicate scene ID validation
+- Cinematic timestamp formatting
+- Serializable timeline entries and reports
+- Public Timeline API
+- Timeline integration with complete project JSON export
+- Automated timeline unit and integration tests
+
+### Fixed
+
+- Improved timestamp formatting compatibility across Python 3.10 through Python 3.13
+  
 ### Planned
 
-* Cinematic timeline planner
 * Music-video section mapping
 * Additional project exporters
 * Improved continuity rules
