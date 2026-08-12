@@ -1,16 +1,19 @@
 """
 Complete cinematic project JSON exporter.
 
-This module validates a CinematicProject, builds its cinematic timeline,
-processes all scenes through the workflow engine, and exports project
-metadata, timeline data, raw scenes, generated prompts, continuity
-reports, and validation results into a portable JSON structure.
+This module validates a CinematicProject, builds its cinematic
+timeline, resolves music-video lip-sync policies when applicable,
+processes all scenes through the workflow engine, and exports the
+complete project as portable structured JSON.
 """
 
 import json
 from pathlib import Path
 from typing import Any
 
+from ..lip_sync import (
+    resolve_music_video_lip_sync,
+)
 from ..project import CinematicProject
 from ..timeline import build_timeline
 from ..workflow import process_project
@@ -22,6 +25,9 @@ def project_to_dict(
     """
     Process and convert a complete cinematic project
     into structured serializable data.
+
+    Music-video projects automatically receive resolved
+    lip-sync policy data.
 
     Raises:
         ValueError: If the project fails validation.
@@ -35,6 +41,8 @@ def project_to_dict(
             + "; ".join(errors)
         )
 
+    project_data = project.to_dict()
+
     timeline_result = build_timeline(
         project.scenes
     )
@@ -43,8 +51,55 @@ def project_to_dict(
         project.scenes
     )
 
+    if project.music_video_structure is not None:
+        lip_sync_results = (
+            resolve_music_video_lip_sync(
+                project.music_video_structure
+            )
+        )
+
+        required_count = sum(
+            result.lip_sync_required
+            for result in lip_sync_results
+        )
+
+        disabled_count = sum(
+            not result.lip_sync_required
+            for result in lip_sync_results
+        )
+
+        warning_count = sum(
+            len(result.warnings)
+            for result in lip_sync_results
+        )
+
+        project_data[
+            "music_video"
+        ][
+            "lip_sync_policies"
+        ] = {
+            "summary": {
+                "policy_count": len(
+                    lip_sync_results
+                ),
+                "required_count": (
+                    required_count
+                ),
+                "disabled_count": (
+                    disabled_count
+                ),
+                "warning_count": (
+                    warning_count
+                ),
+            },
+            "policies": [
+                result.to_dict()
+                for result in lip_sync_results
+            ],
+        }
+
     return {
-        "project": project.to_dict(),
+        "project": project_data,
         "timeline": timeline_result.to_dict(),
         "workflow": {
             "scene_results": [
