@@ -2,10 +2,11 @@
 AI Cinematic Workflow Toolkit.
 
 Open-source tools for structured cinematic scene planning,
-basic and advanced continuity validation, configurable duration
-policies, timeline planning, music-video structure and timing
-validation, lip-sync policy resolution, prompt construction,
-project management, workflow processing, and portable export.
+basic and advanced continuity validation, project-wide global
+constraints, configurable duration policies, timeline planning,
+music-video structure and timing validation, lip-sync policy
+resolution, prompt construction, project management, workflow
+processing, and portable export.
 """
 
 from .continuity import (
@@ -28,6 +29,14 @@ from .duration import (
     DurationPolicy,
     DurationValidationResult,
     validate_scene_duration,
+)
+from .global_constraints import (
+    GlobalConstraintIssue,
+    GlobalConstraintResolution,
+    GlobalConstraints,
+    ResolvedSceneConstraints,
+    resolve_project_constraints,
+    resolve_scene_constraints,
 )
 from .lip_sync import (
     LipSyncPolicyResult,
@@ -91,6 +100,12 @@ __all__ = [
     "normalize_continuity_field",
     "validate_continuity_pair",
     "validate_project_continuity",
+    "GlobalConstraints",
+    "GlobalConstraintIssue",
+    "ResolvedSceneConstraints",
+    "GlobalConstraintResolution",
+    "resolve_scene_constraints",
+    "resolve_project_constraints",
     "NegativeValidationResult",
     "normalize_constraint",
     "validate_negative_constraints",
