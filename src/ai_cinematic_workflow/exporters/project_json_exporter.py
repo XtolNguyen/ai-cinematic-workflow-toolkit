@@ -2,25 +2,97 @@
 Complete cinematic project JSON exporter.
 
 This module validates a CinematicProject, builds its cinematic
-timeline, resolves music-video lip-sync policies when applicable,
-processes all scenes through the workflow engine, and exports the
-complete project as portable structured JSON.
+timeline, optionally applies configurable duration validation,
+resolves music-video lip-sync policies when applicable, processes
+all scenes through the workflow engine, and exports the complete
+project as portable structured JSON.
 """
 
 import json
 from pathlib import Path
 from typing import Any
 
+from ..duration import (
+    DurationPolicy,
+    validate_scene_duration,
+)
 from ..lip_sync import (
     resolve_music_video_lip_sync,
+)
+from ..music_video_timing import (
+    validate_music_video_timing,
 )
 from ..project import CinematicProject
 from ..timeline import build_timeline
 from ..workflow import process_project
 
 
+def _build_duration_validation(
+    project: CinematicProject,
+    policy: DurationPolicy,
+) -> dict[str, Any]:
+    """
+    Build duration-validation export data.
+
+    Music-video projects receive complete cross-system timing
+    validation. Regular cinematic projects receive scene-duration
+    policy validation only.
+    """
+
+    if project.music_video_structure is not None:
+        timing_result = (
+            validate_music_video_timing(
+                project.scenes,
+                project.music_video_structure,
+                policy,
+            )
+        )
+
+        return {
+            "mode": "music_video_timing",
+            **timing_result.to_dict(),
+        }
+
+    scene_results = [
+        validate_scene_duration(
+            scene,
+            policy,
+        )
+        for scene in project.scenes
+    ]
+
+    issues = [
+        issue.to_dict()
+        for result in scene_results
+        for issue in result.issues
+    ]
+
+    return {
+        "mode": "scene_duration",
+        "summary": {
+            "valid": all(
+                result.is_valid
+                for result in scene_results
+            ),
+            "scene_count": len(
+                scene_results
+            ),
+            "issue_count": len(
+                issues
+            ),
+        },
+        "policy": policy.to_dict(),
+        "scene_results": [
+            result.to_dict()
+            for result in scene_results
+        ],
+        "issues": issues,
+    }
+
+
 def project_to_dict(
     project: CinematicProject,
+    duration_policy: DurationPolicy | None = None,
 ) -> dict[str, Any]:
     """
     Process and convert a complete cinematic project
@@ -29,8 +101,15 @@ def project_to_dict(
     Music-video projects automatically receive resolved
     lip-sync policy data.
 
+    When duration_policy is supplied:
+
+    - regular cinematic projects receive scene-duration validation
+    - music-video projects receive complete scene/music timing
+      validation
+
     Raises:
-        ValueError: If the project fails validation.
+        ValueError: If the project or duration policy fails
+        validation.
     """
 
     errors = project.validate()
@@ -40,6 +119,17 @@ def project_to_dict(
             "Project validation failed: "
             + "; ".join(errors)
         )
+
+    if duration_policy is not None:
+        policy_errors = (
+            duration_policy.validate()
+        )
+
+        if policy_errors:
+            raise ValueError(
+                "Invalid duration policy: "
+                + "; ".join(policy_errors)
+            )
 
     project_data = project.to_dict()
 
@@ -98,7 +188,7 @@ def project_to_dict(
             ],
         }
 
-    return {
+    export_data: dict[str, Any] = {
         "project": project_data,
         "timeline": timeline_result.to_dict(),
         "workflow": {
@@ -126,10 +216,21 @@ def project_to_dict(
         },
     }
 
+    if duration_policy is not None:
+        export_data[
+            "duration_validation"
+        ] = _build_duration_validation(
+            project,
+            duration_policy,
+        )
+
+    return export_data
+
 
 def project_to_json(
     project: CinematicProject,
     indent: int = 2,
+    duration_policy: DurationPolicy | None = None,
 ) -> str:
     """
     Convert a complete cinematic project
@@ -137,7 +238,10 @@ def project_to_json(
     """
 
     return json.dumps(
-        project_to_dict(project),
+        project_to_dict(
+            project,
+            duration_policy=duration_policy,
+        ),
         indent=indent,
         ensure_ascii=False,
     )
@@ -147,10 +251,14 @@ def save_project_json(
     project: CinematicProject,
     output_path: str | Path,
     indent: int = 2,
+    duration_policy: DurationPolicy | None = None,
 ) -> Path:
     """
     Validate, process, and save a complete
     cinematic project as JSON.
+
+    Optional duration_policy adds structured duration
+    and timing validation data to the export.
 
     Returns:
         Path to the generated JSON file.
@@ -166,6 +274,7 @@ def save_project_json(
     content = project_to_json(
         project,
         indent=indent,
+        duration_policy=duration_policy,
     )
 
     path.write_text(
