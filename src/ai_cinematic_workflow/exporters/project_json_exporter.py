@@ -2,16 +2,20 @@
 Complete cinematic project JSON exporter.
 
 This module validates a CinematicProject, builds its cinematic
-timeline, optionally applies configurable duration validation,
-resolves music-video lip-sync policies when applicable, processes
-all scenes through the workflow engine, and exports the complete
-project as portable structured JSON.
+timeline, optionally applies configurable duration and advanced
+continuity validation, resolves music-video lip-sync policies when
+applicable, processes all scenes through the workflow engine, and
+exports the complete project as portable structured JSON.
 """
 
 import json
 from pathlib import Path
 from typing import Any
 
+from ..continuity_profiles import (
+    ContinuityProfile,
+    validate_project_continuity,
+)
 from ..duration import (
     DurationPolicy,
     validate_scene_duration,
@@ -90,9 +94,32 @@ def _build_duration_validation(
     }
 
 
+def _build_continuity_validation(
+    project: CinematicProject,
+    profile: ContinuityProfile,
+) -> dict[str, Any]:
+    """
+    Build advanced continuity-validation export data.
+
+    Advanced continuity remains opt-in and does not replace
+    the toolkit's existing basic continuity workflow.
+    """
+
+    result = validate_project_continuity(
+        project.scenes,
+        profile,
+    )
+
+    return {
+        "mode": "advanced_continuity",
+        **result.to_dict(),
+    }
+
+
 def project_to_dict(
     project: CinematicProject,
     duration_policy: DurationPolicy | None = None,
+    continuity_profile: ContinuityProfile | None = None,
 ) -> dict[str, Any]:
     """
     Process and convert a complete cinematic project
@@ -107,9 +134,18 @@ def project_to_dict(
     - music-video projects receive complete scene/music timing
       validation
 
+    When continuity_profile is supplied:
+
+    - project scenes receive advanced scene-to-scene continuity
+      validation
+    - structured errors and warnings are included in the export
+
+    Both optional validation systems preserve backward compatibility
+    when omitted.
+
     Raises:
-        ValueError: If the project or duration policy fails
-        validation.
+        ValueError: If the project, duration policy, or continuity
+        profile fails validation.
     """
 
     errors = project.validate()
@@ -129,6 +165,19 @@ def project_to_dict(
             raise ValueError(
                 "Invalid duration policy: "
                 + "; ".join(policy_errors)
+            )
+
+    if continuity_profile is not None:
+        continuity_errors = (
+            continuity_profile.validate()
+        )
+
+        if continuity_errors:
+            raise ValueError(
+                "Invalid continuity profile: "
+                + "; ".join(
+                    continuity_errors
+                )
             )
 
     project_data = project.to_dict()
@@ -224,6 +273,14 @@ def project_to_dict(
             duration_policy,
         )
 
+    if continuity_profile is not None:
+        export_data[
+            "continuity_validation"
+        ] = _build_continuity_validation(
+            project,
+            continuity_profile,
+        )
+
     return export_data
 
 
@@ -231,6 +288,7 @@ def project_to_json(
     project: CinematicProject,
     indent: int = 2,
     duration_policy: DurationPolicy | None = None,
+    continuity_profile: ContinuityProfile | None = None,
 ) -> str:
     """
     Convert a complete cinematic project
@@ -241,6 +299,9 @@ def project_to_json(
         project_to_dict(
             project,
             duration_policy=duration_policy,
+            continuity_profile=(
+                continuity_profile
+            ),
         ),
         indent=indent,
         ensure_ascii=False,
@@ -252,13 +313,17 @@ def save_project_json(
     output_path: str | Path,
     indent: int = 2,
     duration_policy: DurationPolicy | None = None,
+    continuity_profile: ContinuityProfile | None = None,
 ) -> Path:
     """
     Validate, process, and save a complete
     cinematic project as JSON.
 
     Optional duration_policy adds structured duration
-    and timing validation data to the export.
+    and timing validation.
+
+    Optional continuity_profile adds structured advanced
+    continuity validation.
 
     Returns:
         Path to the generated JSON file.
@@ -275,6 +340,9 @@ def save_project_json(
         project,
         indent=indent,
         duration_policy=duration_policy,
+        continuity_profile=(
+            continuity_profile
+        ),
     )
 
     path.write_text(
