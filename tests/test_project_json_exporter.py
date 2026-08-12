@@ -211,3 +211,74 @@ def test_invalid_project_cannot_be_exported():
         project_to_json(
             invalid_project
         )
+def test_project_export_contains_timeline():
+    """Project export should include a complete cinematic timeline."""
+
+    project = make_project()
+
+    data = project_to_dict(project)
+
+    timeline = data["timeline"]
+
+    assert timeline["summary"]["scene_count"] == 3
+
+    assert (
+        timeline["summary"]["total_duration_seconds"]
+        == 45
+    )
+
+    assert timeline["summary"]["issue_count"] == 0
+
+    assert len(timeline["entries"]) == 3
+
+    assert timeline["entries"][0]["scene_id"] == 1
+    assert timeline["entries"][0]["start_seconds"] == 0
+    assert timeline["entries"][0]["end_seconds"] == 15
+
+    assert timeline["entries"][1]["scene_id"] == 2
+    assert timeline["entries"][1]["start_seconds"] == 15
+    assert timeline["entries"][1]["end_seconds"] == 30
+
+    assert timeline["entries"][2]["scene_id"] == 3
+    assert timeline["entries"][2]["start_seconds"] == 30
+    assert timeline["entries"][2]["end_seconds"] == 45
+
+    assert timeline["issues"] == []
+
+
+def test_saved_project_json_contains_timeline(tmp_path):
+    """Saved project JSON should preserve timeline information."""
+
+    project = make_project()
+
+    output_path = (
+        tmp_path
+        / "timeline"
+        / "project.json"
+    )
+
+    saved_path = save_project_json(
+        project,
+        output_path,
+    )
+
+    data = json.loads(
+        saved_path.read_text(
+            encoding="utf-8"
+        )
+    )
+
+    assert "timeline" in data
+
+    assert data["timeline"]["summary"][
+        "scene_count"
+    ] == 3
+
+    assert data["timeline"]["summary"][
+        "total_duration_seconds"
+    ] == 45
+
+    assert (
+        data["timeline"]["entries"][2]["end_seconds"]
+        == 45
+    )
