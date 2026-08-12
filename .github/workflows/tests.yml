@@ -43,3 +43,57 @@ jobs:
 
       - name: Run tests
         run: pytest -q
+
+      - name: Run music video example
+        run: python examples/music_video_project.py
+
+      - name: Validate example JSON output
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path(
+              "examples/output/music_video_project.json"
+          )
+
+          assert path.exists(), (
+              "Example JSON output was not created"
+          )
+
+          data = json.loads(
+              path.read_text(encoding="utf-8")
+          )
+
+          assert data["project"]["metadata"]["title"] == (
+              "Neon Echoes"
+          )
+
+          assert data["project"]["summary"]["scene_count"] == 3
+
+          assert (
+              data["project"]["summary"][
+                  "total_duration_seconds"
+              ]
+              == 45
+          )
+
+          results = data["workflow"]["scene_results"]
+
+          assert len(results) == 3
+
+          assert results[0]["valid"] is True
+          assert results[1]["valid"] is True
+          assert results[2]["valid"] is True
+
+          issue_fields = {
+              issue["field"]
+              for issue in results[2][
+                  "continuity_issues"
+              ]
+          }
+
+          assert "continuity.wardrobe" in issue_fields
+
+          print("Example JSON validation passed.")
+          PY
