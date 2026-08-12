@@ -1,0 +1,119 @@
+name: Feature Request
+description: Suggest an improvement or new capability for AI Cinematic Workflow Toolkit
+title: "[Feature]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for helping improve AI Cinematic Workflow Toolkit.
+
+        Please describe the production problem first, then explain the proposed feature.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Production problem
+      description: What workflow or production problem are you trying to solve?
+      placeholder: Describe the current limitation or missing capability.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed feature
+      description: Describe the feature or behavior you would like to see.
+      placeholder: Explain how the proposed feature should work.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Feature area
+      options:
+        - Scene planning
+        - Prompt Builder
+        - Negative Constraint Validator
+        - Continuity Engine
+        - Workflow Engine
+        - Cinematic Project Model
+        - Timeline / duration planning
+        - Music-video workflow
+        - Export formats
+        - Platform adapter
+        - Command-line interface
+        - Documentation
+        - Developer tooling
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Preferred scope
+      description: Where should this capability ideally live?
+      options:
+        - Core toolkit
+        - Platform-specific adapter
+        - Optional extension
+        - Documentation / example only
+        - Not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: workflow
+    attributes:
+      label: Suggested workflow
+      description: Describe the expected input, processing steps, and output.
+      placeholder: |
+        Input:
+        - ...
+
+        Processing:
+        1. ...
+        2. ...
+
+        Output:
+        - ...
+    validations:
+      required: false
+
+  - type: textarea
+    id: example
+    attributes:
+      label: Example input and expected output
+      description: Provide a minimal example if it helps explain the request.
+      render: text
+    validations:
+      required: false
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Are there other approaches or workarounds you have considered?
+    validations:
+      required: false
+
+  - type: textarea
+    id: benefits
+    attributes:
+      label: Why this belongs in the toolkit
+      description: Explain how this feature would improve reusable AI cinematic workflows.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I searched existing issues before submitting this feature request.
+          required: true
+        - label: This request describes a reusable workflow or production need.
+          required: true
+        - label: I understand platform-specific behavior may belong in a separate adapter.
+          required: true
