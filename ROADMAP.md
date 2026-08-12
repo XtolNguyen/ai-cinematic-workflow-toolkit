@@ -500,7 +500,7 @@ The v0.2.0 milestone will be considered complete when the toolkit includes:
 
 * [x] Cinematic Timeline Planner
 * [x] Timeline validation
-* [ ] Music Video Structure Model
+* [x] Music Video Structure Model
 * [ ] Musical section mapping
 * [ ] Vocal / instrumental scene metadata
 * [ ] Lip-sync metadata
