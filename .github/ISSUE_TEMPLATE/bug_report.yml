@@ -1,0 +1,141 @@
+name: Bug Report
+description: Report a reproducible problem in AI Cinematic Workflow Toolkit
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for helping improve AI Cinematic Workflow Toolkit.
+
+        Please provide enough information for the issue to be reproduced.
+        Do not include passwords, API keys, access tokens, or other private credentials.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Bug summary
+      description: Briefly describe the problem.
+      placeholder: Describe what went wrong.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Provide the smallest sequence of steps that reproduces the problem.
+      placeholder: |
+        1. Create a project with...
+        2. Process the scenes with...
+        3. Export the project...
+        4. Observe...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What happened instead?
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Toolkit version
+      description: Release version or commit hash if known.
+      placeholder: "v0.1.0"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: python
+    attributes:
+      label: Python version
+      options:
+        - "3.10"
+        - "3.11"
+        - "3.12"
+        - "3.13"
+        - "Other"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: operating_system
+    attributes:
+      label: Operating system
+      options:
+        - Windows
+        - macOS
+        - Linux
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: affected_area
+    attributes:
+      label: Affected component
+      options:
+        - Scene model / validation
+        - Prompt Builder
+        - Negative Constraint Validator
+        - Continuity Validator
+        - Workflow Engine
+        - Cinematic Project Model
+        - JSON Export
+        - Example project
+        - Installation / packaging
+        - Documentation
+        - GitHub Actions / CI
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: minimal_example
+    attributes:
+      label: Minimal example
+      description: Add the smallest relevant code or data sample, if available.
+      render: python
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error output or logs
+      description: Paste relevant traceback or error output.
+      render: shell
+    validations:
+      required: false
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Add any other information that may help diagnose the issue.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I searched existing issues before submitting this report.
+          required: true
+        - label: I removed passwords, API keys, tokens, and other private credentials.
+          required: true
+        - label: I provided enough information to reproduce the problem.
+          required: true
