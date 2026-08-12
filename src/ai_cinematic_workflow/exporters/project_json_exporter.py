@@ -2,10 +2,11 @@
 Complete cinematic project JSON exporter.
 
 This module validates a CinematicProject, builds its cinematic
-timeline, optionally applies configurable duration and advanced
-continuity validation, resolves music-video lip-sync policies when
-applicable, processes all scenes through the workflow engine, and
-exports the complete project as portable structured JSON.
+timeline, optionally applies configurable duration validation,
+advanced continuity validation, and project-wide global constraints,
+resolves music-video lip-sync policies when applicable, processes
+all scenes through the workflow engine, and exports the complete
+project as portable structured JSON.
 """
 
 import json
@@ -19,6 +20,10 @@ from ..continuity_profiles import (
 from ..duration import (
     DurationPolicy,
     validate_scene_duration,
+)
+from ..global_constraints import (
+    GlobalConstraints,
+    resolve_project_constraints,
 )
 from ..lip_sync import (
     resolve_music_video_lip_sync,
@@ -116,10 +121,34 @@ def _build_continuity_validation(
     }
 
 
+def _build_global_constraints(
+    project: CinematicProject,
+    constraints: GlobalConstraints,
+) -> dict[str, Any]:
+    """
+    Build project-wide global constraint resolution data.
+
+    Global constraints remain opt-in and preserve the original
+    Scene objects while resolving project-wide and scene-level
+    negative constraints into per-scene structured results.
+    """
+
+    result = resolve_project_constraints(
+        project.scenes,
+        constraints,
+    )
+
+    return {
+        "mode": "project_global_constraints",
+        **result.to_dict(),
+    }
+
+
 def project_to_dict(
     project: CinematicProject,
     duration_policy: DurationPolicy | None = None,
     continuity_profile: ContinuityProfile | None = None,
+    global_constraints: GlobalConstraints | None = None,
 ) -> dict[str, Any]:
     """
     Process and convert a complete cinematic project
@@ -140,12 +169,20 @@ def project_to_dict(
       validation
     - structured errors and warnings are included in the export
 
-    Both optional validation systems preserve backward compatibility
-    when omitted.
+    When global_constraints is supplied:
+
+    - project-wide production constraints are serialized
+    - global negative and prohibited constraints are resolved
+      with each scene's own negative constraints
+    - duplicate negative constraints are removed
+    - original Scene objects remain unchanged
+
+    All optional validation and constraint layers preserve backward
+    compatibility when omitted.
 
     Raises:
-        ValueError: If the project, duration policy, or continuity
-        profile fails validation.
+        ValueError: If the project, duration policy, continuity
+        profile, or global constraints fail validation.
     """
 
     errors = project.validate()
@@ -177,6 +214,19 @@ def project_to_dict(
                 "Invalid continuity profile: "
                 + "; ".join(
                     continuity_errors
+                )
+            )
+
+    if global_constraints is not None:
+        global_constraint_errors = (
+            global_constraints.validate()
+        )
+
+        if global_constraint_errors:
+            raise ValueError(
+                "Invalid global constraints: "
+                + "; ".join(
+                    global_constraint_errors
                 )
             )
 
@@ -281,6 +331,14 @@ def project_to_dict(
             continuity_profile,
         )
 
+    if global_constraints is not None:
+        export_data[
+            "global_constraints"
+        ] = _build_global_constraints(
+            project,
+            global_constraints,
+        )
+
     return export_data
 
 
@@ -289,6 +347,7 @@ def project_to_json(
     indent: int = 2,
     duration_policy: DurationPolicy | None = None,
     continuity_profile: ContinuityProfile | None = None,
+    global_constraints: GlobalConstraints | None = None,
 ) -> str:
     """
     Convert a complete cinematic project
@@ -302,6 +361,9 @@ def project_to_json(
             continuity_profile=(
                 continuity_profile
             ),
+            global_constraints=(
+                global_constraints
+            ),
         ),
         indent=indent,
         ensure_ascii=False,
@@ -314,6 +376,7 @@ def save_project_json(
     indent: int = 2,
     duration_policy: DurationPolicy | None = None,
     continuity_profile: ContinuityProfile | None = None,
+    global_constraints: GlobalConstraints | None = None,
 ) -> Path:
     """
     Validate, process, and save a complete
@@ -324,6 +387,9 @@ def save_project_json(
 
     Optional continuity_profile adds structured advanced
     continuity validation.
+
+    Optional global_constraints adds structured project-wide
+    constraints and per-scene resolved negative constraints.
 
     Returns:
         Path to the generated JSON file.
@@ -342,6 +408,9 @@ def save_project_json(
         duration_policy=duration_policy,
         continuity_profile=(
             continuity_profile
+        ),
+        global_constraints=(
+            global_constraints
         ),
     )
 
