@@ -1,10 +1,10 @@
 """
 Complete cinematic project JSON exporter.
 
-This module validates a CinematicProject, processes all of its scenes
-through the workflow engine, and exports project metadata, raw scene
-data, generated prompts, continuity reports, and validation results
-into a portable JSON structure.
+This module validates a CinematicProject, builds its cinematic timeline,
+processes all scenes through the workflow engine, and exports project
+metadata, timeline data, raw scenes, generated prompts, continuity
+reports, and validation results into a portable JSON structure.
 """
 
 import json
@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from ..project import CinematicProject
+from ..timeline import build_timeline
 from ..workflow import process_project
 
 
@@ -34,12 +35,17 @@ def project_to_dict(
             + "; ".join(errors)
         )
 
+    timeline_result = build_timeline(
+        project.scenes
+    )
+
     workflow_results = process_project(
         project.scenes
     )
 
     return {
         "project": project.to_dict(),
+        "timeline": timeline_result.to_dict(),
         "workflow": {
             "scene_results": [
                 result.to_dict()
