@@ -2,8 +2,9 @@
 AI Cinematic Workflow Toolkit.
 
 Open-source tools for structured cinematic scene planning,
-validation, continuity, timeline planning, prompt construction,
-project management, workflow processing, and portable export.
+validation, continuity, timeline planning, music-video structure,
+prompt construction, project management, workflow processing,
+and portable export.
 """
 
 from .continuity import (
@@ -11,6 +12,11 @@ from .continuity import (
     compare_scenes,
     continuity_report,
     has_continuity_issues,
+)
+from .music_video import (
+    MusicSection,
+    MusicVideoStructure,
+    normalize_music_token,
 )
 from .negative_validator import (
     NegativeValidationResult,
@@ -60,6 +66,9 @@ __all__ = [
     "TimelineResult",
     "build_timeline",
     "format_timestamp",
+    "MusicSection",
+    "MusicVideoStructure",
+    "normalize_music_token",
     "WorkflowSceneResult",
     "process_scene",
     "process_project",
