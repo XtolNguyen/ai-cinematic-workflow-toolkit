@@ -9,6 +9,22 @@ The project follows a simple versioned release process. Versions may evolve towa
 ## [Unreleased]
 
 ### Added
+- Configurable Duration Policy model
+- Preferred, minimum, maximum, and allowed scene-duration rules
+- Strict and advisory scene-duration enforcement
+- Configurable duration tolerance support
+- Structured scene-duration validation issues and results
+- Music-video timing validation across cinematic scenes and music sections
+- Scene-to-music-section duration alignment validation
+- Scene timing overflow and section-boundary validation
+- Music-section start and end coverage validation
+- Total cinematic runtime and music-video runtime comparison
+- Public Duration Policy and Music Video Timing Validation API
+- Optional duration validation in complete project JSON exports
+- Scene-duration validation mode for regular cinematic projects
+- Music-video timing validation mode for music-video projects
+- Backward-compatible project exports when no DurationPolicy is supplied
+- Automated duration-policy, music-video timing, and project integration tests
 - Lip-Sync Policy Engine
 - Automatic lip-sync policy resolution for vocal music sections
 - Instrumental-section protection against unintended singing mouth movement
