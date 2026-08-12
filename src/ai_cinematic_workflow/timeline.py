@@ -91,16 +91,28 @@ def format_timestamp(seconds: float) -> str:
             "timestamp seconds cannot be negative"
         )
 
-    hours = int(seconds // 3600)
-    minutes = int(
-        (seconds % 3600) // 60
+    total_seconds = float(seconds)
+
+    hours = int(
+        total_seconds // 3600
     )
-    remaining = seconds % 60
+
+    minutes = int(
+        (total_seconds % 3600) // 60
+    )
+
+    remaining = (
+        total_seconds % 60
+    )
 
     if remaining.is_integer():
-        seconds_text = f"{int(remaining):02d}"
+        seconds_text = (
+            f"{int(remaining):02d}"
+        )
     else:
-        seconds_text = f"{remaining:05.2f}"
+        seconds_text = (
+            f"{remaining:05.2f}"
+        )
 
     return (
         f"{hours:02d}:"
