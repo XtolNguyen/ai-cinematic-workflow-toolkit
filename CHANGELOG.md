@@ -9,7 +9,17 @@ The project follows a simple versioned release process. Versions may evolve towa
 ## [Unreleased]
 
 ### Added
-
+- Lip-Sync Policy Engine
+- Automatic lip-sync policy resolution for vocal music sections
+- Instrumental-section protection against unintended singing mouth movement
+- Dialogue, performance-only and cinematic-only lip-sync handling
+- Explicit vocal B-roll lip-sync override support
+- Validation preventing forced lip-sync on non-vocal sections
+- Per-section lip-sync execution instructions
+- Lip-sync policy warnings and summary metadata
+- Public Lip-Sync Policy API
+- Lip-sync policy integration with complete music-video project JSON export
+- Automated unit and project integration tests for lip-sync policies
 - Cinematic Timeline Planner
 - Automatic scene start and end time calculation
 - Cumulative project timeline duration
