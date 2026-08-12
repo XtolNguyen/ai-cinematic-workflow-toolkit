@@ -1,5 +1,9 @@
 # AI Cinematic Workflow Toolkit
 
+[![Python Tests](https://github.com/XtolNguyen/ai-cinematic-workflow-toolkit/actions/workflows/tests.yml/badge.svg)](https://github.com/XtolNguyen/ai-cinematic-workflow-toolkit/actions/workflows/tests.yml)
+[![Release](https://img.shields.io/github/v/release/XtolNguyen/ai-cinematic-workflow-toolkit)](https://github.com/XtolNguyen/ai-cinematic-workflow-toolkit/releases)
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
+[![License](https://img.shields.io/github/license/XtolNguyen/ai-cinematic-workflow-toolkit)](LICENSE)
 An open-source toolkit for structuring, validating, and organizing AI-assisted cinematic production workflows.
 
 The project is designed to help creators turn a story, screenplay, music track, or creative concept into structured scene plans and production-ready prompt data for AI video pipelines.
