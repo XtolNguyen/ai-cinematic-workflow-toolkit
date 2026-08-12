@@ -9,6 +9,7 @@ The project follows a simple versioned release process. Versions may evolve towa
 ## [Unreleased]
 
 ### Added
+
 - Configurable Duration Policy model
 - Preferred, minimum, maximum, and allowed scene-duration rules
 - Strict and advisory scene-duration enforcement
@@ -82,6 +83,29 @@ The project follows a simple versioned release process. Versions may evolve towa
 - Backward compatibility with the existing basic continuity API
 - Coexistence of DurationPolicy and ContinuityProfile validation in project exports
 - Automated advanced continuity unit and project integration tests
+- Project-wide Global Constraints
+- Configurable required and advisory project constraints
+- Global negative constraints
+- Prohibited-element constraints
+- Character identity constraints
+- Visual-style constraints
+- Camera constraints
+- Environment constraints
+- Custom named constraint categories
+- Constraint normalization and duplicate removal
+- Validation for conflicting required, advisory, negative, and prohibited constraints
+- Project-wide and scene-level negative-constraint resolution
+- Deduplicated global and scene negative constraints
+- Non-mutating scene constraint resolution
+- Structured GlobalConstraintIssue reporting
+- Per-scene ResolvedSceneConstraints output
+- Project-level GlobalConstraintResolution output
+- Serializable global constraint configuration and resolution data
+- Public Global Constraints API
+- Optional Global Constraints integration in complete project JSON exports
+- Backward compatibility with existing scene-level negative constraints
+- Coexistence with DurationPolicy and ContinuityProfile validation
+- Automated Global Constraints unit and project integration tests
   
 ### Fixed
 
