@@ -22,7 +22,21 @@ The project follows a simple versioned release process. Versions may evolve towa
 - Public Timeline API
 - Timeline integration with complete project JSON export
 - Automated timeline unit and integration tests
-
+- Music Video Structure Model
+- Structured music sections including intro, verse, pre-chorus, chorus, instrumental, bridge, breakdown, final chorus and outro
+- Vocal, instrumental, dialogue, performance-only and cinematic-only performance modes
+- Scene-to-music-section mapping
+- Music-section duration and chronological validation
+- Music-section overlap detection
+- Duplicate scene mapping detection
+- Project-scene mapping validation
+- Vocal-performance requirement metadata
+- Music-video structure serialization
+- Music-video integration with CinematicProject
+- Music-video integration with complete project JSON export
+- Public Music Video Structure API
+- Automated unit and project integration tests for music-video structures
+  
 ### Fixed
 
 - Improved timestamp formatting compatibility across Python 3.10 through Python 3.13
