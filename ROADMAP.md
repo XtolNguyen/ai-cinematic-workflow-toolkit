@@ -502,8 +502,9 @@ The v0.2.0 milestone will be considered complete when the toolkit includes:
 * [x] Timeline validation
 * [x] Music Video Structure Model
 * [ ] Musical section mapping
-* [ ] Vocal / instrumental scene metadata
-* [ ] Lip-sync metadata
+* [x] Vocal/instrumental metadata
+* [x] Lip-sync metadata
+* [x] Lip-sync rules
 * [ ] Configurable scene-duration policies
 * [ ] Advanced continuity categories
 * [ ] Continuity profiles
