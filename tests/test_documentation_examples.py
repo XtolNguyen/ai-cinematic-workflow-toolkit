@@ -260,29 +260,43 @@ def test_readme_exists():
 
 
 def test_readme_documents_current_release_status():
-    """README should distinguish released v0.1.0 from v0.2 work."""
+    """
+    README should describe the synchronized v0.2.0 package
+    as release-ready before the formal Git tag and GitHub Release.
+    """
 
     text = README_PATH.read_text(
         encoding="utf-8"
     )
 
     assert (
-        "Current released version:"
+        "**Current version:** `v0.2.0`"
         in text
     )
 
     assert (
-        "`v0.1.0`"
+        "**Current milestone:** "
+        "`v0.2.0 — Cinematic Timeline & Music Video Foundation`"
         in text
     )
 
     assert (
-        "v0.2.0"
+        "**v0.2.0 status:** Release Ready"
         in text
     )
 
     assert (
-        "In Progress"
+        "The package metadata is now prepared at version `0.2.0`."
+        in text
+    )
+
+    assert (
+        "final release preparation"
+        in text
+    )
+
+    assert (
+        "Concrete provider-specific WAN, Veo, Kling"
         in text
     )
 
