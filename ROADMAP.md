@@ -6,7 +6,11 @@ The roadmap is intentionally modular. Features may be refined, reordered, or spl
 
 ---
 
-# Current Release
+# Release Status
+
+Current released version: **v0.2.0**
+
+Previous released version: **v0.1.0**
 
 ## v0.1.0 — Foundation
 
@@ -44,15 +48,23 @@ Completed capabilities include:
 
 # v0.2.0 — Cinematic Timeline & Music Video Foundation
 
-Status: **Release Ready**
+Status: **Released**
+
+Release date: **2026-08-13**
 
 The defined v0.2.0 implementation, testing, runnable-example, and documentation scope is complete.
 
-The milestone is in final release preparation. Formal release status is applied only after the `v0.2.0` Git tag and GitHub Release are published and verified.
+v0.2.0 is the current released cinematic timeline and music-video foundation of the toolkit.
 
 The primary goal of v0.2.0 is to expand the toolkit from scene-by-scene workflow processing into structured **timeline-aware cinematic production planning**.
 
 The v0.2.0 architecture remains provider-neutral and builds a reusable cinematic production layer before provider-specific integrations are introduced.
+
+---
+
+# v0.3.0 — Production Adapters
+
+Status: **Future**
 
 ---
 
