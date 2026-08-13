@@ -208,16 +208,56 @@ The project follows a simple versioned release process. Versions may evolve towa
 - Public Enhanced Project Export API
 - Provider-neutral enhanced project export packages
 - Automated Enhanced Project Export unit and project integration tests
+- Provider-neutral Platform Adapter foundation
+- Public `PlatformAdapter` base contract
+- `PlatformAdapterCapabilities` capability declarations
+- `PlatformAdapterIssue` structured warning and error reporting
+- `PlatformAdapterResult` deterministic adaptation results
+- `PlatformAdapterRegistry` for explicit adapter registration and lookup
+- Canonical platform identifier normalization
+- Adapter identity, display name, version, and metadata support
+- Canonical Structured Prompt Section capability declarations
+- StructuredPromptResult adaptation
+- Supported prompt-section reporting
+- Unsupported prompt-section reporting
+- Explicit warning generation for unsupported sections
+- Error-level reporting for unsupported StructuredPromptResult input
+- Section metadata preservation and configurable metadata stripping
+- Custom adapter capability metadata
+- JSON-serializable adapter capabilities
+- JSON-serializable adapter metadata
+- JSON-serializable adapter results
+- Deterministic adapted section ordering
+- Adapter result validity, warning-count, and error-count reporting
+- Duplicate canonical adapter registration protection
+- Invalid adapter registration protection
+- Unknown adapter lookup handling
+- Deterministic adapter registry listing
+- Extensible provider-specific adapter subclass boundary
+- Multi-scene CinematicProject adapter integration
+- PromptProfile-aware platform adaptation
+- GlobalConstraints-aware platform adaptation
+- Resolved negative-constraint preservation before adapter filtering
+- Multiple independent adapters for the same cinematic source
+- Non-mutating StructuredPromptResult adaptation
+- Non-mutating CinematicProject integration
+- Coexistence with Enhanced Project Export without automatic provider injection
+- Separation between portable project export and target-platform adaptation
+- Provider-neutral base payload structure
+- No undocumented WAN, Veo, Kling, or other provider parameters in the adapter foundation
+- No provider API endpoints, API keys, or network execution in the core adapter layer
+- Public Platform Adapter package API
+- Automated Platform Adapter unit tests
+- Automated Platform Adapter project integration tests
   
 ### Fixed
 
 - Improved timestamp formatting compatibility across Python 3.10 through Python 3.13
-  
+
 ### Planned
 
-* Music-video section mapping
 * Additional project exporters
-* Improved continuity rules
+* Additional continuity enhancements
 * Platform-specific adapters
 * Command-line interface
 * Extended documentation and examples
