@@ -920,7 +920,7 @@ The v0.2.0 milestone will be considered complete when the toolkit includes:
 * [x] Expanded project JSON export
 * [x] Platform Adapter foundation
 * [x] Automated tests for all implemented new core behavior
-* [ ] Updated runnable example
+* [x] Updated runnable example
 * [ ] Updated documentation
 * [x] Updated CHANGELOG
 
