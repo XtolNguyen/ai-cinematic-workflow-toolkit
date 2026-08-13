@@ -277,6 +277,39 @@ The project follows a simple versioned release process. Versions may evolve towa
 - No WAN, Veo, Kling, or other provider-specific execution required by the runnable example
 - Automated runnable-example validation
 - End-to-end example validation across project structure, music mapping, lip-sync, duration, continuity, structured prompts, enhanced export, platform adaptation, and JSON persistence
+- Comprehensive README update for the v0.2.0 architecture
+- Current release and development-status documentation
+- Preserved v0.1.0 foundation documentation
+- v0.2.0 provider-neutral architecture overview
+- Cinematic Timeline documentation
+- Music Video Structure documentation
+- Vocal, instrumental, dialogue, performance-only, and cinematic-only mode documentation
+- Lip-Sync Policy documentation
+- DurationPolicy documentation
+- Music-video timing validation documentation
+- Advanced Continuity documentation
+- ContinuityProfile documentation
+- GlobalConstraints documentation
+- PromptProfile documentation
+- Structured Prompt Sections documentation
+- Enhanced Project Export documentation
+- ProjectExportOptions documentation
+- ProjectExportManifest documentation
+- JSON persistence documentation
+- Platform Adapter foundation documentation
+- PlatformAdapterRegistry documentation
+- Provider-neutral core boundary documentation
+- Future provider-specific adapter boundary documentation
+- Updated runnable v0.2.0 music-video example documentation
+- Verified installation instructions
+- Updated Quick Start examples
+- Current public Python API examples
+- Testing and Python 3.10–3.13 CI documentation
+- Architecture and design-principle documentation
+- Explicit separation between portable project export and provider-specific adaptation
+- Explicit documentation that WAN, Veo, Kling, and other provider-specific production adapters are not yet implemented
+- Automated validation for representative README public-API examples
+- Documentation validation across scene processing, timeline, music-video structure, lip-sync, duration, continuity, constraints, prompt profiles, structured prompts, enhanced export, JSON persistence, and provider-neutral platform adaptation
 
 ### Fixed
 
