@@ -261,8 +261,8 @@ def test_readme_exists():
 
 def test_readme_documents_current_release_status():
     """
-    README should describe the synchronized v0.2.0 package
-    as release-ready before the formal Git tag and GitHub Release.
+    README should describe v0.2.0 as the current released
+    provider-neutral toolkit version.
     """
 
     text = README_PATH.read_text(
@@ -270,7 +270,7 @@ def test_readme_documents_current_release_status():
     )
 
     assert (
-        "**Current version:** `v0.2.0`"
+        "**Current released version:** `v0.2.0`"
         in text
     )
 
@@ -281,17 +281,18 @@ def test_readme_documents_current_release_status():
     )
 
     assert (
-        "**v0.2.0 status:** Release Ready"
+        "**v0.2.0 status:** Released"
         in text
     )
 
     assert (
-        "The package metadata is now prepared at version `0.2.0`."
+        "Version `0.2.0` is the current released software state "
+        "of the toolkit."
         in text
     )
 
     assert (
-        "final release preparation"
+        "The package metadata is synchronized at version `0.2.0`."
         in text
     )
 
