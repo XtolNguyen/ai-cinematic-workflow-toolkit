@@ -44,7 +44,11 @@ Completed capabilities include:
 
 # v0.2.0 — Cinematic Timeline & Music Video Foundation
 
-Status: **In Progress**
+Status: **Release Ready**
+
+The defined v0.2.0 implementation, testing, runnable-example, and documentation scope is complete.
+
+The milestone is in final release preparation. Formal release status is applied only after the `v0.2.0` Git tag and GitHub Release are published and verified.
 
 The primary goal of v0.2.0 is to expand the toolkit from scene-by-scene workflow processing into structured **timeline-aware cinematic production planning**.
 
