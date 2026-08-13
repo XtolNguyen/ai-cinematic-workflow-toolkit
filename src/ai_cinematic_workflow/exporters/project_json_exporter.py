@@ -4,10 +4,12 @@ Complete cinematic project JSON exporter.
 This module validates a CinematicProject, builds its cinematic
 timeline, optionally applies configurable duration validation,
 advanced continuity validation, project-wide global constraints,
-and reusable prompt-profile resolution, resolves music-video
-lip-sync policies when applicable, processes all scenes through
-the workflow engine, and exports the complete project as portable
-structured JSON.
+reusable prompt-profile resolution, and structured prompt assembly.
+
+Music-video lip-sync policies are resolved automatically when
+applicable.
+
+All optional systems preserve backward compatibility when omitted.
 """
 
 import json
@@ -35,7 +37,11 @@ from ..music_video_timing import (
 from ..project import CinematicProject
 from ..prompt_profiles import (
     PromptProfile,
+    ResolvedPromptProfile,
     resolve_prompt_profile,
+)
+from ..structured_prompts import (
+    assemble_structured_prompt,
 )
 from ..timeline import build_timeline
 from ..workflow import process_project
@@ -108,12 +114,7 @@ def _build_continuity_validation(
     project: CinematicProject,
     profile: ContinuityProfile,
 ) -> dict[str, Any]:
-    """
-    Build advanced continuity-validation export data.
-
-    Advanced continuity remains opt-in and does not replace
-    the toolkit's existing basic continuity workflow.
-    """
+    """Build advanced continuity-validation export data."""
 
     result = validate_project_continuity(
         project.scenes,
@@ -130,13 +131,7 @@ def _build_global_constraints(
     project: CinematicProject,
     constraints: GlobalConstraints,
 ) -> dict[str, Any]:
-    """
-    Build project-wide global constraint resolution data.
-
-    Global constraints remain opt-in and preserve the original
-    Scene objects while resolving project-wide and scene-level
-    negative constraints into per-scene structured results.
-    """
+    """Build project-wide global constraint resolution data."""
 
     result = resolve_project_constraints(
         project.scenes,
@@ -149,7 +144,7 @@ def _build_global_constraints(
     }
 
 
-def _build_prompt_profile(
+def _resolve_prompt_profile_for_export(
     profile: PromptProfile,
     *,
     base_profile: PromptProfile | None = None,
@@ -160,15 +155,13 @@ def _build_prompt_profile(
         Any,
     ] | None = None,
     resolved_name: str | None = None,
-) -> dict[str, Any]:
+) -> ResolvedPromptProfile:
     """
-    Resolve reusable prompt-profile configuration for export.
-
-    This produces structured prompt configuration only.
-    It does not render final prompt strings.
+    Resolve PromptProfile configuration once for reuse by
+    both profile export and structured prompt assembly.
     """
 
-    result = resolve_prompt_profile(
+    return resolve_prompt_profile(
         profile,
         base_profile=base_profile,
         enable_overrides=enable_overrides,
@@ -179,9 +172,101 @@ def _build_prompt_profile(
         resolved_name=resolved_name,
     )
 
+
+def _build_prompt_profile(
+    resolved_profile: ResolvedPromptProfile,
+) -> dict[str, Any]:
+    """Build resolved PromptProfile export data."""
+
     return {
         "mode": "resolved_prompt_profile",
-        **result.to_dict(),
+        **resolved_profile.to_dict(),
+    }
+
+
+def _build_structured_prompts(
+    project: CinematicProject,
+    *,
+    resolved_prompt_profile: (
+        ResolvedPromptProfile | None
+    ) = None,
+    global_constraints: (
+        GlobalConstraints | None
+    ) = None,
+    include_empty_sections: bool = False,
+) -> dict[str, Any]:
+    """
+    Build platform-agnostic structured prompt sections
+    for every Scene in the project.
+    """
+
+    scene_results = [
+        assemble_structured_prompt(
+            scene,
+            prompt_profile=(
+                resolved_prompt_profile
+            ),
+            global_constraints=(
+                global_constraints
+            ),
+            include_empty_sections=(
+                include_empty_sections
+            ),
+        )
+        for scene in project.scenes
+    ]
+
+    total_sections = sum(
+        result.section_count
+        for result in scene_results
+    )
+
+    valid_scene_count = sum(
+        result.is_valid
+        for result in scene_results
+    )
+
+    omitted_component_count = sum(
+        len(
+            result.omitted_components
+        )
+        for result in scene_results
+    )
+
+    return {
+        "mode": "structured_prompt_sections",
+        "summary": {
+            "scene_count": len(
+                scene_results
+            ),
+            "valid_scene_count": (
+                valid_scene_count
+            ),
+            "total_section_count": (
+                total_sections
+            ),
+            "omitted_component_count": (
+                omitted_component_count
+            ),
+            "include_empty_sections": (
+                include_empty_sections
+            ),
+            "prompt_profile_name": (
+                resolved_prompt_profile.name
+                if (
+                    resolved_prompt_profile
+                    is not None
+                )
+                else None
+            ),
+            "global_constraints_applied": (
+                global_constraints is not None
+            ),
+        },
+        "scene_results": [
+            result.to_dict()
+            for result in scene_results
+        ],
     }
 
 
@@ -198,10 +283,7 @@ def _validate_prompt_profile_request(
     prompt_resolved_name: str | None,
 ) -> None:
     """
-    Reject prompt-profile options that have no source profile.
-
-    This prevents silently ignoring inheritance or override
-    configuration when prompt_profile is omitted.
+    Reject PromptProfile options that have no source profile.
     """
 
     if prompt_profile is not None:
@@ -210,11 +292,18 @@ def _validate_prompt_profile_request(
     has_prompt_options = any(
         [
             base_prompt_profile is not None,
-            bool(prompt_enable_overrides),
-            bool(prompt_disable_overrides),
-            bool(prompt_config_overrides),
+            bool(
+                prompt_enable_overrides
+            ),
+            bool(
+                prompt_disable_overrides
+            ),
+            bool(
+                prompt_config_overrides
+            ),
             (
-                prompt_resolved_name is not None
+                prompt_resolved_name
+                is not None
                 and bool(
                     prompt_resolved_name.strip()
                 )
@@ -227,6 +316,26 @@ def _validate_prompt_profile_request(
             "prompt_profile is required when "
             "prompt-profile inheritance or overrides "
             "are supplied"
+        )
+
+
+def _validate_structured_prompt_request(
+    *,
+    include_structured_prompts: bool,
+    include_empty_prompt_sections: bool,
+) -> None:
+    """
+    Reject structured-prompt options that would otherwise
+    be silently ignored.
+    """
+
+    if (
+        include_empty_prompt_sections
+        and not include_structured_prompts
+    ):
+        raise ValueError(
+            "include_structured_prompts must be True "
+            "when include_empty_prompt_sections is enabled"
         )
 
 
@@ -244,38 +353,35 @@ def project_to_dict(
         Any,
     ] | None = None,
     prompt_resolved_name: str | None = None,
+    include_structured_prompts: bool = False,
+    include_empty_prompt_sections: bool = False,
 ) -> dict[str, Any]:
     """
     Process and convert a complete cinematic project
     into structured serializable data.
 
-    Music-video projects automatically receive resolved
-    lip-sync policy data.
+    Optional systems:
 
-    Optional duration_policy:
-    - validates cinematic scene duration
-    - validates complete music-video timing when applicable
+    - DurationPolicy
+    - ContinuityProfile
+    - GlobalConstraints
+    - PromptProfile
+    - Structured Prompt Sections
 
-    Optional continuity_profile:
-    - performs advanced scene-to-scene continuity validation
+    Structured Prompt Sections remain opt-in and platform-agnostic.
 
-    Optional global_constraints:
-    - resolves project-wide production constraints
-    - merges project and scene negative constraints
+    When include_structured_prompts=True, one
+    StructuredPromptResult is assembled for every Scene.
 
-    Optional prompt_profile:
-    - resolves reusable prompt configuration
-    - supports optional base-profile inheritance
-    - supports enable and disable overrides
-    - supports nested custom configuration overrides
-    - does not render final prompt strings
+    When a PromptProfile is supplied, the same resolved profile
+    is reused by structured prompt assembly.
 
-    All optional systems preserve backward compatibility when
-    omitted.
+    When GlobalConstraints are supplied, structured prompt assembly
+    may include project-wide constraint data and resolved project +
+    Scene negative constraints.
 
-    Raises:
-        ValueError: If the project or supplied optional
-        configuration fails validation.
+    Existing exports remain backward-compatible when optional
+    systems are omitted.
     """
 
     errors = project.validate()
@@ -283,7 +389,9 @@ def project_to_dict(
     if errors:
         raise ValueError(
             "Project validation failed: "
-            + "; ".join(errors)
+            + "; ".join(
+                errors
+            )
         )
 
     if duration_policy is not None:
@@ -294,7 +402,9 @@ def project_to_dict(
         if policy_errors:
             raise ValueError(
                 "Invalid duration policy: "
-                + "; ".join(policy_errors)
+                + "; ".join(
+                    policy_errors
+                )
             )
 
     if continuity_profile is not None:
@@ -342,6 +452,19 @@ def project_to_dict(
         ),
     )
 
+    _validate_structured_prompt_request(
+        include_structured_prompts=(
+            include_structured_prompts
+        ),
+        include_empty_prompt_sections=(
+            include_empty_prompt_sections
+        ),
+    )
+
+    resolved_prompt_profile: (
+        ResolvedPromptProfile | None
+    ) = None
+
     if prompt_profile is not None:
         prompt_errors = (
             prompt_profile.validate()
@@ -367,6 +490,27 @@ def project_to_dict(
                         base_prompt_errors
                     )
                 )
+
+        resolved_prompt_profile = (
+            _resolve_prompt_profile_for_export(
+                prompt_profile,
+                base_profile=(
+                    base_prompt_profile
+                ),
+                enable_overrides=(
+                    prompt_enable_overrides
+                ),
+                disable_overrides=(
+                    prompt_disable_overrides
+                ),
+                custom_config_overrides=(
+                    prompt_config_overrides
+                ),
+                resolved_name=(
+                    prompt_resolved_name
+                ),
+            )
+        )
 
     project_data = project.to_dict()
 
@@ -396,7 +540,9 @@ def project_to_dict(
         )
 
         warning_count = sum(
-            len(result.warnings)
+            len(
+                result.warnings
+            )
             for result in lip_sync_results
         )
 
@@ -427,7 +573,9 @@ def project_to_dict(
 
     export_data: dict[str, Any] = {
         "project": project_data,
-        "timeline": timeline_result.to_dict(),
+        "timeline": (
+            timeline_result.to_dict()
+        ),
         "workflow": {
             "scene_results": [
                 result.to_dict()
@@ -442,11 +590,15 @@ def project_to_dict(
                     for result in workflow_results
                 ),
                 "scenes_with_continuity_issues": sum(
-                    bool(result.continuity_issues)
+                    bool(
+                        result.continuity_issues
+                    )
                     for result in workflow_results
                 ),
                 "scenes_with_negative_warnings": sum(
-                    bool(result.negative_warnings)
+                    bool(
+                        result.negative_warnings
+                    )
                     for result in workflow_results
                 ),
             },
@@ -477,25 +629,26 @@ def project_to_dict(
             global_constraints,
         )
 
-    if prompt_profile is not None:
+    if resolved_prompt_profile is not None:
         export_data[
             "prompt_profile"
         ] = _build_prompt_profile(
-            prompt_profile,
-            base_profile=(
-                base_prompt_profile
+            resolved_prompt_profile
+        )
+
+    if include_structured_prompts:
+        export_data[
+            "structured_prompts"
+        ] = _build_structured_prompts(
+            project,
+            resolved_prompt_profile=(
+                resolved_prompt_profile
             ),
-            enable_overrides=(
-                prompt_enable_overrides
+            global_constraints=(
+                global_constraints
             ),
-            disable_overrides=(
-                prompt_disable_overrides
-            ),
-            custom_config_overrides=(
-                prompt_config_overrides
-            ),
-            resolved_name=(
-                prompt_resolved_name
+            include_empty_sections=(
+                include_empty_prompt_sections
             ),
         )
 
@@ -517,16 +670,17 @@ def project_to_json(
         Any,
     ] | None = None,
     prompt_resolved_name: str | None = None,
+    include_structured_prompts: bool = False,
+    include_empty_prompt_sections: bool = False,
 ) -> str:
-    """
-    Convert a complete cinematic project
-    into formatted JSON.
-    """
+    """Convert a complete cinematic project into JSON."""
 
     return json.dumps(
         project_to_dict(
             project,
-            duration_policy=duration_policy,
+            duration_policy=(
+                duration_policy
+            ),
             continuity_profile=(
                 continuity_profile
             ),
@@ -551,6 +705,12 @@ def project_to_json(
             prompt_resolved_name=(
                 prompt_resolved_name
             ),
+            include_structured_prompts=(
+                include_structured_prompts
+            ),
+            include_empty_prompt_sections=(
+                include_empty_prompt_sections
+            ),
         ),
         indent=indent,
         ensure_ascii=False,
@@ -573,26 +733,17 @@ def save_project_json(
         Any,
     ] | None = None,
     prompt_resolved_name: str | None = None,
+    include_structured_prompts: bool = False,
+    include_empty_prompt_sections: bool = False,
 ) -> Path:
     """
-    Validate, process, and save a complete
-    cinematic project as JSON.
-
-    Optional configuration layers include:
-
-    - DurationPolicy
-    - ContinuityProfile
-    - GlobalConstraints
-    - PromptProfile
-
-    Prompt profiles are resolved as structured configuration only.
-    They do not render final platform-specific prompt strings.
-
-    Returns:
-        Path to the generated JSON file.
+    Validate, process, and save a complete cinematic project
+    as portable JSON.
     """
 
-    path = Path(output_path)
+    path = Path(
+        output_path
+    )
 
     path.parent.mkdir(
         parents=True,
@@ -602,7 +753,9 @@ def save_project_json(
     content = project_to_json(
         project,
         indent=indent,
-        duration_policy=duration_policy,
+        duration_policy=(
+            duration_policy
+        ),
         continuity_profile=(
             continuity_profile
         ),
@@ -626,6 +779,12 @@ def save_project_json(
         ),
         prompt_resolved_name=(
             prompt_resolved_name
+        ),
+        include_structured_prompts=(
+            include_structured_prompts
+        ),
+        include_empty_prompt_sections=(
+            include_empty_prompt_sections
         ),
     )
 
