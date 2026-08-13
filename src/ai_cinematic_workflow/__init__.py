@@ -71,6 +71,15 @@ from .negative_validator import (
     normalize_constraint,
     validate_negative_constraints,
 )
+from .platform_adapters import (
+    VALID_ADAPTER_ISSUE_SEVERITIES,
+    PlatformAdapter,
+    PlatformAdapterCapabilities,
+    PlatformAdapterIssue,
+    PlatformAdapterRegistry,
+    PlatformAdapterResult,
+    normalize_platform_identifier,
+)
 from .project import (
     CinematicProject,
     ProjectMetadata,
@@ -124,6 +133,13 @@ __all__ = [
     "OPTIONAL_PROJECT_EXPORT_SECTIONS",
     "normalize_export_section",
     "build_project_export_manifest",
+    "PlatformAdapter",
+    "PlatformAdapterCapabilities",
+    "PlatformAdapterIssue",
+    "PlatformAdapterResult",
+    "PlatformAdapterRegistry",
+    "VALID_ADAPTER_ISSUE_SEVERITIES",
+    "normalize_platform_identifier",
     "PromptResult",
     "build_cinematic_prompt",
     "PromptProfile",
