@@ -8,6 +8,18 @@ The project follows a simple versioned release process. Versions may evolve towa
 
 ## [Unreleased]
 
+### Planned
+
+* Additional project exporters
+* Additional continuity enhancements
+* Platform-specific adapters
+* Command-line interface
+* Extended documentation and examples
+
+---
+
+## [0.2.0] - 2026-08-13
+
 ### Added
 
 - Configurable Duration Policy model
@@ -314,14 +326,6 @@ The project follows a simple versioned release process. Versions may evolve towa
 ### Fixed
 
 - Improved timestamp formatting compatibility across Python 3.10 through Python 3.13
-
-### Planned
-
-* Additional project exporters
-* Additional continuity enhancements
-* Platform-specific adapters
-* Command-line interface
-* Extended documentation and examples
 
 ---
 
