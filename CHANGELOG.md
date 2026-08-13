@@ -249,7 +249,35 @@ The project follows a simple versioned release process. Versions may evolve towa
 - Public Platform Adapter package API
 - Automated Platform Adapter unit tests
 - Automated Platform Adapter project integration tests
-  
+- Upgraded runnable music-video example for the v0.2.0 architecture
+- End-to-end CinematicProject demonstration using current public APIs
+- Multi-scene cinematic workflow demonstration
+- Cinematic Timeline demonstration
+- Structured Music Video Structure demonstration
+- Scene-to-music-section mapping demonstration
+- Vocal, instrumental, and cinematic-only performance-mode demonstration
+- Lip-Sync Policy resolution demonstration
+- Instrumental and cinematic-only protection against unintended singing lip-sync
+- DurationPolicy demonstration
+- Music-video timing validation demonstration
+- ContinuityProfile validation demonstration
+- Intentional continuity-warning demonstration
+- GlobalConstraints resolution demonstration
+- PromptProfile resolution demonstration
+- Structured Prompt Sections demonstration
+- Enhanced Project Export demonstration
+- ProjectExportOptions demonstration
+- ProjectExportManifest inspection
+- Provider-neutral PlatformAdapter demonstration
+- PlatformAdapterRegistry registration and lookup demonstration
+- Supported and unsupported adapter capability reporting
+- Portable JSON file persistence
+- Human-readable console output for each major cinematic workflow stage
+- Provider-neutral runnable execution with no external API credentials required
+- No WAN, Veo, Kling, or other provider-specific execution required by the runnable example
+- Automated runnable-example validation
+- End-to-end example validation across project structure, music mapping, lip-sync, duration, continuity, structured prompts, enhanced export, platform adaptation, and JSON persistence
+
 ### Fixed
 
 - Improved timestamp formatting compatibility across Python 3.10 through Python 3.13
