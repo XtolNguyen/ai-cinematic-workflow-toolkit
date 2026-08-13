@@ -138,6 +138,39 @@ The project follows a simple versioned release process. Versions may evolve towa
 - Backward compatibility with the existing cinematic prompt builder
 - Coexistence with DurationPolicy, ContinuityProfile, and GlobalConstraints
 - Automated Prompt Profiles unit and project integration tests
+- Platform-agnostic Structured Prompt Sections
+- StructuredPromptSection model for named cinematic prompt components
+- StructuredPromptResult model for complete per-scene structured prompt output
+- OmittedPromptComponent reporting for excluded or unavailable components
+- Canonical structured prompt-section identifiers
+- Deterministic cinematic prompt-section ordering
+- Human-readable canonical prompt-section labels
+- Character prompt section
+- Location prompt section
+- Structured camera section with shot, movement, and lens data
+- Performance prompt section
+- Lighting prompt section
+- Mood prompt section
+- Dialogue-or-vocals prompt section
+- Continuity prompt section
+- Project-wide Global Constraints prompt section
+- Scene and resolved negative-constraint prompt sections
+- PromptProfile-driven prompt-section inclusion and exclusion
+- Explicit disabled, not-enabled, empty, and unsupported-component reporting
+- Optional empty-section preservation
+- Structured section metadata including component, source, empty state, and profile control
+- Included and omitted component reporting
+- Non-mutating structured prompt assembly
+- JSON-serializable structured prompt output
+- Public Structured Prompt Sections API
+- Optional per-scene Structured Prompt Sections in complete Project JSON exports
+- Reuse of resolved PromptProfile configuration during structured prompt export
+- GlobalConstraints-aware structured prompt assembly
+- Deduplicated project-wide and scene-level negative-constraint resolution
+- Backward compatibility with the existing build_cinematic_prompt() API
+- Backward-compatible opt-in structured prompt project exports
+- Coexistence with DurationPolicy, ContinuityProfile, GlobalConstraints, PromptProfile, timeline, and workflow output
+- Automated Structured Prompt Sections unit and project integration tests
   
 ### Fixed
 
