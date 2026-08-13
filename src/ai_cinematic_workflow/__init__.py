@@ -31,6 +31,16 @@ from .duration import (
     DurationValidationResult,
     validate_scene_duration,
 )
+from .export_options import (
+    OPTIONAL_PROJECT_EXPORT_SECTIONS,
+    PROJECT_EXPORT_SECTION_ORDER,
+    VALID_PROJECT_EXPORT_SECTIONS,
+    OmittedExportSection,
+    ProjectExportManifest,
+    ProjectExportOptions,
+    build_project_export_manifest,
+    normalize_export_section,
+)
 from .global_constraints import (
     GlobalConstraintIssue,
     GlobalConstraintResolution,
@@ -106,6 +116,14 @@ __all__ = [
     "Scene",
     "ProjectMetadata",
     "CinematicProject",
+    "ProjectExportOptions",
+    "ProjectExportManifest",
+    "OmittedExportSection",
+    "PROJECT_EXPORT_SECTION_ORDER",
+    "VALID_PROJECT_EXPORT_SECTIONS",
+    "OPTIONAL_PROJECT_EXPORT_SECTIONS",
+    "normalize_export_section",
+    "build_project_export_manifest",
     "PromptResult",
     "build_cinematic_prompt",
     "PromptProfile",
