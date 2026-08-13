@@ -3,10 +3,11 @@ Complete cinematic project JSON exporter.
 
 This module validates a CinematicProject, builds its cinematic
 timeline, optionally applies configurable duration validation,
-advanced continuity validation, and project-wide global constraints,
-resolves music-video lip-sync policies when applicable, processes
-all scenes through the workflow engine, and exports the complete
-project as portable structured JSON.
+advanced continuity validation, project-wide global constraints,
+and reusable prompt-profile resolution, resolves music-video
+lip-sync policies when applicable, processes all scenes through
+the workflow engine, and exports the complete project as portable
+structured JSON.
 """
 
 import json
@@ -32,6 +33,10 @@ from ..music_video_timing import (
     validate_music_video_timing,
 )
 from ..project import CinematicProject
+from ..prompt_profiles import (
+    PromptProfile,
+    resolve_prompt_profile,
+)
 from ..timeline import build_timeline
 from ..workflow import process_project
 
@@ -144,11 +149,101 @@ def _build_global_constraints(
     }
 
 
+def _build_prompt_profile(
+    profile: PromptProfile,
+    *,
+    base_profile: PromptProfile | None = None,
+    enable_overrides: list[str] | None = None,
+    disable_overrides: list[str] | None = None,
+    custom_config_overrides: dict[
+        str,
+        Any,
+    ] | None = None,
+    resolved_name: str | None = None,
+) -> dict[str, Any]:
+    """
+    Resolve reusable prompt-profile configuration for export.
+
+    This produces structured prompt configuration only.
+    It does not render final prompt strings.
+    """
+
+    result = resolve_prompt_profile(
+        profile,
+        base_profile=base_profile,
+        enable_overrides=enable_overrides,
+        disable_overrides=disable_overrides,
+        custom_config_overrides=(
+            custom_config_overrides
+        ),
+        resolved_name=resolved_name,
+    )
+
+    return {
+        "mode": "resolved_prompt_profile",
+        **result.to_dict(),
+    }
+
+
+def _validate_prompt_profile_request(
+    prompt_profile: PromptProfile | None,
+    *,
+    base_prompt_profile: PromptProfile | None,
+    prompt_enable_overrides: list[str] | None,
+    prompt_disable_overrides: list[str] | None,
+    prompt_config_overrides: dict[
+        str,
+        Any,
+    ] | None,
+    prompt_resolved_name: str | None,
+) -> None:
+    """
+    Reject prompt-profile options that have no source profile.
+
+    This prevents silently ignoring inheritance or override
+    configuration when prompt_profile is omitted.
+    """
+
+    if prompt_profile is not None:
+        return
+
+    has_prompt_options = any(
+        [
+            base_prompt_profile is not None,
+            bool(prompt_enable_overrides),
+            bool(prompt_disable_overrides),
+            bool(prompt_config_overrides),
+            (
+                prompt_resolved_name is not None
+                and bool(
+                    prompt_resolved_name.strip()
+                )
+            ),
+        ]
+    )
+
+    if has_prompt_options:
+        raise ValueError(
+            "prompt_profile is required when "
+            "prompt-profile inheritance or overrides "
+            "are supplied"
+        )
+
+
 def project_to_dict(
     project: CinematicProject,
     duration_policy: DurationPolicy | None = None,
     continuity_profile: ContinuityProfile | None = None,
     global_constraints: GlobalConstraints | None = None,
+    prompt_profile: PromptProfile | None = None,
+    base_prompt_profile: PromptProfile | None = None,
+    prompt_enable_overrides: list[str] | None = None,
+    prompt_disable_overrides: list[str] | None = None,
+    prompt_config_overrides: dict[
+        str,
+        Any,
+    ] | None = None,
+    prompt_resolved_name: str | None = None,
 ) -> dict[str, Any]:
     """
     Process and convert a complete cinematic project
@@ -157,32 +252,30 @@ def project_to_dict(
     Music-video projects automatically receive resolved
     lip-sync policy data.
 
-    When duration_policy is supplied:
+    Optional duration_policy:
+    - validates cinematic scene duration
+    - validates complete music-video timing when applicable
 
-    - regular cinematic projects receive scene-duration validation
-    - music-video projects receive complete scene/music timing
-      validation
+    Optional continuity_profile:
+    - performs advanced scene-to-scene continuity validation
 
-    When continuity_profile is supplied:
+    Optional global_constraints:
+    - resolves project-wide production constraints
+    - merges project and scene negative constraints
 
-    - project scenes receive advanced scene-to-scene continuity
-      validation
-    - structured errors and warnings are included in the export
+    Optional prompt_profile:
+    - resolves reusable prompt configuration
+    - supports optional base-profile inheritance
+    - supports enable and disable overrides
+    - supports nested custom configuration overrides
+    - does not render final prompt strings
 
-    When global_constraints is supplied:
-
-    - project-wide production constraints are serialized
-    - global negative and prohibited constraints are resolved
-      with each scene's own negative constraints
-    - duplicate negative constraints are removed
-    - original Scene objects remain unchanged
-
-    All optional validation and constraint layers preserve backward
-    compatibility when omitted.
+    All optional systems preserve backward compatibility when
+    omitted.
 
     Raises:
-        ValueError: If the project, duration policy, continuity
-        profile, or global constraints fail validation.
+        ValueError: If the project or supplied optional
+        configuration fails validation.
     """
 
     errors = project.validate()
@@ -229,6 +322,51 @@ def project_to_dict(
                     global_constraint_errors
                 )
             )
+
+    _validate_prompt_profile_request(
+        prompt_profile,
+        base_prompt_profile=(
+            base_prompt_profile
+        ),
+        prompt_enable_overrides=(
+            prompt_enable_overrides
+        ),
+        prompt_disable_overrides=(
+            prompt_disable_overrides
+        ),
+        prompt_config_overrides=(
+            prompt_config_overrides
+        ),
+        prompt_resolved_name=(
+            prompt_resolved_name
+        ),
+    )
+
+    if prompt_profile is not None:
+        prompt_errors = (
+            prompt_profile.validate()
+        )
+
+        if prompt_errors:
+            raise ValueError(
+                "Invalid prompt profile: "
+                + "; ".join(
+                    prompt_errors
+                )
+            )
+
+        if base_prompt_profile is not None:
+            base_prompt_errors = (
+                base_prompt_profile.validate()
+            )
+
+            if base_prompt_errors:
+                raise ValueError(
+                    "Invalid base prompt profile: "
+                    + "; ".join(
+                        base_prompt_errors
+                    )
+                )
 
     project_data = project.to_dict()
 
@@ -339,6 +477,28 @@ def project_to_dict(
             global_constraints,
         )
 
+    if prompt_profile is not None:
+        export_data[
+            "prompt_profile"
+        ] = _build_prompt_profile(
+            prompt_profile,
+            base_profile=(
+                base_prompt_profile
+            ),
+            enable_overrides=(
+                prompt_enable_overrides
+            ),
+            disable_overrides=(
+                prompt_disable_overrides
+            ),
+            custom_config_overrides=(
+                prompt_config_overrides
+            ),
+            resolved_name=(
+                prompt_resolved_name
+            ),
+        )
+
     return export_data
 
 
@@ -348,6 +508,15 @@ def project_to_json(
     duration_policy: DurationPolicy | None = None,
     continuity_profile: ContinuityProfile | None = None,
     global_constraints: GlobalConstraints | None = None,
+    prompt_profile: PromptProfile | None = None,
+    base_prompt_profile: PromptProfile | None = None,
+    prompt_enable_overrides: list[str] | None = None,
+    prompt_disable_overrides: list[str] | None = None,
+    prompt_config_overrides: dict[
+        str,
+        Any,
+    ] | None = None,
+    prompt_resolved_name: str | None = None,
 ) -> str:
     """
     Convert a complete cinematic project
@@ -364,6 +533,24 @@ def project_to_json(
             global_constraints=(
                 global_constraints
             ),
+            prompt_profile=(
+                prompt_profile
+            ),
+            base_prompt_profile=(
+                base_prompt_profile
+            ),
+            prompt_enable_overrides=(
+                prompt_enable_overrides
+            ),
+            prompt_disable_overrides=(
+                prompt_disable_overrides
+            ),
+            prompt_config_overrides=(
+                prompt_config_overrides
+            ),
+            prompt_resolved_name=(
+                prompt_resolved_name
+            ),
         ),
         indent=indent,
         ensure_ascii=False,
@@ -377,19 +564,29 @@ def save_project_json(
     duration_policy: DurationPolicy | None = None,
     continuity_profile: ContinuityProfile | None = None,
     global_constraints: GlobalConstraints | None = None,
+    prompt_profile: PromptProfile | None = None,
+    base_prompt_profile: PromptProfile | None = None,
+    prompt_enable_overrides: list[str] | None = None,
+    prompt_disable_overrides: list[str] | None = None,
+    prompt_config_overrides: dict[
+        str,
+        Any,
+    ] | None = None,
+    prompt_resolved_name: str | None = None,
 ) -> Path:
     """
     Validate, process, and save a complete
     cinematic project as JSON.
 
-    Optional duration_policy adds structured duration
-    and timing validation.
+    Optional configuration layers include:
 
-    Optional continuity_profile adds structured advanced
-    continuity validation.
+    - DurationPolicy
+    - ContinuityProfile
+    - GlobalConstraints
+    - PromptProfile
 
-    Optional global_constraints adds structured project-wide
-    constraints and per-scene resolved negative constraints.
+    Prompt profiles are resolved as structured configuration only.
+    They do not render final platform-specific prompt strings.
 
     Returns:
         Path to the generated JSON file.
@@ -411,6 +608,24 @@ def save_project_json(
         ),
         global_constraints=(
             global_constraints
+        ),
+        prompt_profile=(
+            prompt_profile
+        ),
+        base_prompt_profile=(
+            base_prompt_profile
+        ),
+        prompt_enable_overrides=(
+            prompt_enable_overrides
+        ),
+        prompt_disable_overrides=(
+            prompt_disable_overrides
+        ),
+        prompt_config_overrides=(
+            prompt_config_overrides
+        ),
+        prompt_resolved_name=(
+            prompt_resolved_name
         ),
     )
 
