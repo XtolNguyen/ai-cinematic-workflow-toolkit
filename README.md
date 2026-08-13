@@ -15,16 +15,17 @@ The project is designed for creators, filmmakers, developers, researchers, and w
 
 ## Project Status
 
-**Current version:** `v0.2.0`
+**Current released version:** `v0.2.0`
 
 **Current milestone:** `v0.2.0 — Cinematic Timeline & Music Video Foundation`
 
-**v0.2.0 status:** Release Ready
+**v0.2.0 status:** Released
 
 The v0.2.0 milestone has completed its defined implementation, testing, runnable-example, and documentation scope.
 
-The repository is in final release preparation. The formal Git tag and GitHub Release are created only after release metadata and CI verification are complete.
-The package metadata is now prepared at version `0.2.0`.
+Version `0.2.0` is the current released software state of the toolkit.
+
+The package metadata is synchronized at version `0.2.0`.
 
 The v0.2.0 release remains provider-neutral and includes the completed cinematic timeline, music-video, validation, structured prompt, enhanced export, Platform Adapter foundation, runnable-example, and documentation work defined by the milestone.
 
@@ -1220,7 +1221,7 @@ RELEASED
 v0.2.0
 Cinematic Timeline &
 Music Video Foundation
-RELEASE READY
+RELEASED
     ↓
 v0.3.0
 Production Adapters
