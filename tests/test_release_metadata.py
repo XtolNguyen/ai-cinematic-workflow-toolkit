@@ -115,10 +115,10 @@ def test_package_versions_match():
     )
 
 
-def test_readme_is_release_ready_for_v020():
+def test_readme_documents_released_v020():
     """
-    README should describe the package as v0.2.0 and release-ready
-    before the formal tag and GitHub Release.
+    README should identify v0.2.0 as the current released
+    provider-neutral toolkit version.
     """
 
     text = read_text(
@@ -126,26 +126,31 @@ def test_readme_is_release_ready_for_v020():
     )
 
     assert (
-        "**Current version:** `v0.2.0`"
+        "**Current released version:** `v0.2.0`"
         in text
     )
 
     assert (
-        "**v0.2.0 status:** Release Ready"
+        "**v0.2.0 status:** Released"
         in text
     )
 
     assert (
-        "The package metadata is now prepared "
-        "at version `0.2.0`."
+        "Version `0.2.0` is the current released software state "
+        "of the toolkit."
+        in text
+    )
+
+    assert (
+        "The package metadata is synchronized at version `0.2.0`."
         in text
     )
 
 
-def test_roadmap_is_release_ready_for_v020():
+def test_roadmap_documents_released_v020():
     """
-    ROADMAP should report the completed v0.2.0 milestone as
-    release-ready during final release preparation.
+    ROADMAP should identify v0.2.0 as the current released
+    cinematic timeline and music-video foundation.
     """
 
     text = read_text(
@@ -159,7 +164,17 @@ def test_roadmap_is_release_ready_for_v020():
     )
 
     assert (
-        "Status: **Release Ready**"
+        "Current released version: **v0.2.0**"
+        in text
+    )
+
+    assert (
+        "Status: **Released**"
+        in text
+    )
+
+    assert (
+        "Release date: **2026-08-13**"
         in text
     )
 
