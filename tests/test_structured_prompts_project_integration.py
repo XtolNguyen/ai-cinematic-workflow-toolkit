@@ -331,21 +331,20 @@ def test_prompt_profile_filters_structured_sections():
     )
 
     assert (
-        scene_result[
-            "included_components"
-        ]
-        == [
-            "characters",
-            "location",
-            "camera",
-            "performance",
-            "lighting",
-            "dialogue_or_vocals",
-            "continuity",
-            "global_constraints",
-            "negative_constraints",
-        ]
-    )
+    scene_result[
+        "included_components"
+    ]
+    == [
+        "characters",
+        "location",
+        "camera",
+        "performance",
+        "lighting",
+        "dialogue_or_vocals",
+        "continuity",
+        "negative_constraints",
+    ]
+)
 
     assert (
         "mood"
