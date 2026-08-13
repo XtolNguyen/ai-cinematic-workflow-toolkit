@@ -15,13 +15,20 @@ The project is designed for creators, filmmakers, developers, researchers, and w
 
 ## Project Status
 
-**Current released version:** `v0.1.0`
+**Current version:** `v0.2.0`
 
-**Current development milestone:** `v0.2.0 — Cinematic Timeline & Music Video Foundation`
+**Current milestone:** `v0.2.0 — Cinematic Timeline & Music Video Foundation`
 
-**v0.2.0 status:** In Progress
+**v0.2.0 status:** Release Ready
 
-The current development branch already includes the major v0.2.0 core architecture while the public package version remains `0.1.0` until the v0.2.0 milestone is formally completed and released.
+The v0.2.0 milestone has completed its defined implementation, testing, runnable-example, and documentation scope.
+
+The repository is in final release preparation. The formal Git tag and GitHub Release are created only after release metadata and CI verification are complete.
+The package metadata is now prepared at version `0.2.0`.
+
+The v0.2.0 release remains provider-neutral and includes the completed cinematic timeline, music-video, validation, structured prompt, enhanced export, Platform Adapter foundation, runnable-example, and documentation work defined by the milestone.
+
+Concrete provider-specific WAN, Veo, Kling, and other production adapters remain future work.
 
 The project is developed publicly and incrementally through source code, issues, automated tests, documentation, roadmap updates, and releases.
 
@@ -1213,7 +1220,7 @@ RELEASED
 v0.2.0
 Cinematic Timeline &
 Music Video Foundation
-IN PROGRESS
+RELEASE READY
     ↓
 v0.3.0
 Production Adapters
@@ -1224,9 +1231,9 @@ Command-Line Interface
 FUTURE
 ```
 
-The v0.2.0 milestone focuses on provider-neutral cinematic and music-video production architecture.
+The v0.2.0 milestone completes the provider-neutral cinematic and music-video production foundation.
 
-Concrete provider-specific adapters remain future work.
+Concrete provider-specific adapters remain future v0.3.0 Production Adapters work.
 
 See [ROADMAP.md](ROADMAP.md) for the detailed development plan.
 
