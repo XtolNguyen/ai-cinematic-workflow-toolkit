@@ -510,7 +510,7 @@ The v0.2.0 milestone will be considered complete when the toolkit includes:
 * [x] Continuity profiles
 * [x] Global project constraints
 * [x] Prompt profiles
-* [ ] Structured prompt sections
+* [x] Structured prompt sections
 * [x] Music video timeline validation
 * [ ] Expanded project JSON export
 * [ ] Automated tests for all new core behavior
