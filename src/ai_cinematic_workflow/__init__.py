@@ -3,10 +3,11 @@ AI Cinematic Workflow Toolkit.
 
 Open-source tools for structured cinematic scene planning,
 basic and advanced continuity validation, project-wide global
-constraints, reusable prompt profiles, configurable duration
-policies, timeline planning, music-video structure and timing
-validation, lip-sync policy resolution, prompt construction,
-project management, workflow processing, and portable export.
+constraints, reusable prompt profiles, structured cinematic prompt
+assembly, configurable duration policies, timeline planning,
+music-video structure and timing validation, lip-sync policy
+resolution, prompt construction, project management, workflow
+processing, and portable export.
 """
 
 from .continuity import (
@@ -77,6 +78,16 @@ from .prompt_profiles import (
     resolve_prompt_profile,
 )
 from .scene import Camera, Scene
+from .structured_prompts import (
+    STRUCTURED_PROMPT_SECTION_LABELS,
+    STRUCTURED_PROMPT_SECTION_ORDER,
+    VALID_STRUCTURED_PROMPT_SECTIONS,
+    OmittedPromptComponent,
+    StructuredPromptResult,
+    StructuredPromptSection,
+    assemble_structured_prompt,
+    normalize_prompt_section,
+)
 from .timeline import (
     TimelineEntry,
     TimelineIssue,
@@ -103,6 +114,14 @@ __all__ = [
     "VALID_PROMPT_COMPONENTS",
     "normalize_prompt_component",
     "resolve_prompt_profile",
+    "StructuredPromptSection",
+    "OmittedPromptComponent",
+    "StructuredPromptResult",
+    "STRUCTURED_PROMPT_SECTION_ORDER",
+    "STRUCTURED_PROMPT_SECTION_LABELS",
+    "VALID_STRUCTURED_PROMPT_SECTIONS",
+    "normalize_prompt_section",
+    "assemble_structured_prompt",
     "ContinuityIssue",
     "compare_scenes",
     "continuity_report",
