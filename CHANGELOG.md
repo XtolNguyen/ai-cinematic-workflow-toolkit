@@ -171,6 +171,43 @@ The project follows a simple versioned release process. Versions may evolve towa
 - Backward-compatible opt-in structured prompt project exports
 - Coexistence with DurationPolicy, ContinuityProfile, GlobalConstraints, PromptProfile, timeline, and workflow output
 - Automated Structured Prompt Sections unit and project integration tests
+- Enhanced Project Export configuration
+- Reusable named ProjectExportOptions
+- Configurable timeline inclusion
+- Configurable workflow inclusion
+- Configurable duration-validation inclusion
+- Configurable continuity-validation inclusion
+- Configurable Global Constraints inclusion
+- Configurable PromptProfile inclusion
+- Configurable Structured Prompt Sections inclusion
+- Empty structured-prompt section export configuration
+- Canonical project export section registry
+- Deterministic enhanced export ordering
+- ProjectExportManifest for completed export metadata
+- OmittedExportSection reporting
+- Included-section reporting
+- Omitted-section reporting with explicit reasons
+- Active optional production-system reporting
+- Serialized export configuration in the manifest
+- Missing DurationPolicy reporting
+- Missing ContinuityProfile reporting
+- Missing GlobalConstraints reporting
+- Missing PromptProfile reporting
+- Disabled-by-export-options reporting
+- Validation of incompatible legacy and enhanced export options
+- Separation between requested export layers and actually produced layers
+- Internal PromptProfile reuse without requiring top-level PromptProfile export
+- Internal GlobalConstraints reuse without requiring top-level Global Constraints export
+- Non-mutating enhanced export processing
+- JSON-serializable enhanced project export output
+- Enhanced project JSON file persistence
+- Backward compatibility with project_to_dict()
+- Backward compatibility with project_to_json()
+- Backward compatibility with save_project_json()
+- Backward compatibility with legacy Structured Prompt export flags
+- Public Enhanced Project Export API
+- Provider-neutral enhanced project export packages
+- Automated Enhanced Project Export unit and project integration tests
   
 ### Fixed
 
