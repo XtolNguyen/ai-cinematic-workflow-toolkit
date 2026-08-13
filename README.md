@@ -4,30 +4,74 @@
 [![Release](https://img.shields.io/github/v/release/XtolNguyen/ai-cinematic-workflow-toolkit)](https://github.com/XtolNguyen/ai-cinematic-workflow-toolkit/releases)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
 [![License](https://img.shields.io/github/license/XtolNguyen/ai-cinematic-workflow-toolkit)](LICENSE)
-An open-source toolkit for structuring, validating, and organizing AI-assisted cinematic production workflows.
 
-The project is designed to help creators turn a story, screenplay, music track, or creative concept into structured scene plans and production-ready prompt data for AI video pipelines.
+**AI Cinematic Workflow Toolkit** is an open-source Python toolkit for structuring, validating, organizing, and exporting AI-assisted cinematic production workflows.
 
-> **Project Status:** Early Development
-> The toolkit is currently being built in public. Core specifications, workflow schemas, validation tools, and examples will be added progressively.
+It provides reusable models and validation layers for cinematic scenes, music-video structure, timeline planning, lip-sync policy, duration rules, continuity, global production constraints, prompt profiles, structured prompts, portable project export, and provider-neutral platform adaptation.
+
+The project is designed for creators, filmmakers, developers, researchers, and workflow designers building transparent and reproducible AI-video production pipelines.
 
 ---
 
-## 🎬 Overview
+## Project Status
 
-## 🚀 Quick Start
+**Current released version:** `v0.1.0`
 
-AI Cinematic Workflow Toolkit is a Python toolkit for building structured AI-assisted cinematic projects with reusable scene models, validation, prompt generation, continuity analysis, negative-constraint processing, workflow execution, and portable JSON export.
+**Current development milestone:** `v0.2.0 — Cinematic Timeline & Music Video Foundation`
 
-### Requirements
+**v0.2.0 status:** In Progress
+
+The current development branch already includes the major v0.2.0 core architecture while the public package version remains `0.1.0` until the v0.2.0 milestone is formally completed and released.
+
+The project is developed publicly and incrementally through source code, issues, automated tests, documentation, roadmap updates, and releases.
+
+---
+
+## What the Toolkit Does
+
+AI-assisted cinematic production often requires multiple connected stages:
+
+```text
+Creative Input
+      ↓
+Scene Planning
+      ↓
+Timeline Planning
+      ↓
+Music / Performance Structure
+      ↓
+Lip-Sync Policy
+      ↓
+Duration Validation
+      ↓
+Continuity Validation
+      ↓
+Global Production Constraints
+      ↓
+Prompt Profiles
+      ↓
+Structured Prompt Sections
+      ↓
+Portable Project Export
+      ↓
+Platform Adapter Layer
+      ↓
+Future Provider-Specific Integrations
+```
+
+The toolkit focuses on making these stages:
+
+**Structured · Reproducible · Portable · Transparent · Creator-friendly**
+
+---
+
+# Installation
+
+## Requirements
 
 * Python 3.10 or newer
 * Git
 * pip
-
----
-
-## 📦 Installation
 
 Clone the repository:
 
@@ -42,8 +86,6 @@ Create a virtual environment:
 python -m venv .venv
 ```
 
-Activate the environment.
-
 ### Windows
 
 ```bash
@@ -56,10 +98,15 @@ Activate the environment.
 source .venv/bin/activate
 ```
 
-Install the toolkit:
+Upgrade pip:
 
 ```bash
 python -m pip install --upgrade pip
+```
+
+Install the toolkit:
+
+```bash
 python -m pip install -e .
 ```
 
@@ -71,9 +118,9 @@ python -m pip install -e ".[dev]"
 
 ---
 
-## 🎥 Basic Usage
+# Quick Start
 
-A cinematic scene can be created with the public package API:
+Create and process a cinematic scene using the public package API:
 
 ```python
 from ai_cinematic_workflow import (
@@ -91,9 +138,15 @@ scene = Scene(
         movement="slow dolly in",
         lens="50mm",
     ),
-    characters=["Lead performer"],
-    performance="Natural emotional performance",
-    lighting="Soft cinematic lighting",
+    characters=[
+        "Lead performer",
+    ],
+    performance=(
+        "Natural emotional performance"
+    ),
+    lighting=(
+        "Soft cinematic lighting"
+    ),
     mood="Reflective",
     negative_constraints=[
         "Distorted Face",
@@ -108,25 +161,25 @@ print(result.prompt)
 print(result.negative_prompt)
 ```
 
-The workflow automatically performs:
+The basic scene workflow performs:
 
 ```text
-Scene Input
-    ↓
+Scene
+  ↓
 Scene Validation
-    ↓
+  ↓
 Negative Constraint Normalization
-    ↓
+  ↓
 Cinematic Prompt Generation
-    ↓
-Structured Workflow Result
+  ↓
+WorkflowSceneResult
 ```
 
 ---
 
-## 🎬 Multi-Scene Projects
+# Multi-Scene Cinematic Projects
 
-Complete cinematic projects can contain multiple ordered scenes:
+A complete cinematic production can contain multiple ordered scenes.
 
 ```python
 from ai_cinematic_workflow import (
@@ -140,7 +193,7 @@ from ai_cinematic_workflow import (
 project = CinematicProject(
     metadata=ProjectMetadata(
         title="Demo Project",
-        project_type="music-video",
+        project_type="cinematic",
         language="en",
         aspect_ratio="16:9",
         frame_rate=24,
@@ -155,7 +208,9 @@ project = CinematicProject(
                 movement="slow dolly in",
                 lens="50mm",
             ),
-            characters=["Lead performer"],
+            characters=[
+                "Lead performer",
+            ],
             continuity={
                 "wardrobe": "black outfit",
             },
@@ -169,7 +224,9 @@ project = CinematicProject(
                 movement="slow push in",
                 lens="85mm",
             ),
-            characters=["Lead performer"],
+            characters=[
+                "Lead performer",
+            ],
             continuity={
                 "wardrobe": "black outfit",
             },
@@ -177,19 +234,617 @@ project = CinematicProject(
     ],
 )
 
-results = process_project(project.scenes)
+results = process_project(
+    project.scenes
+)
 
 for result in results:
-    print(result.prompt)
+    print(
+        result.scene_id,
+        result.valid,
+        result.prompt,
+    )
 ```
 
-Consecutive scenes are automatically checked for potential continuity changes.
+The workflow engine preserves ordered scene processing and reports potential continuity changes between consecutive scenes.
 
 ---
 
-## 📄 Complete Project JSON Export
+# v0.2.0 Architecture
 
-A complete project can be processed and exported as portable JSON:
+The current development architecture extends the original scene workflow into a complete provider-neutral cinematic production pipeline.
+
+```text
+CinematicProject
+       ↓
+Cinematic Timeline
+       ↓
+Music Video Structure
+       ↓
+Performance Mode
+       ↓
+Lip-Sync Policy
+       ↓
+DurationPolicy
+       ↓
+ContinuityProfile
+       ↓
+GlobalConstraints
+       ↓
+PromptProfile
+       ↓
+StructuredPromptResult
+       ↓
+Enhanced Project Export
+       ↓
+Platform Adapter Foundation
+       ↓
+Future Provider-Specific Adapters
+```
+
+Each layer is designed to have a focused responsibility and to remain inspectable and testable.
+
+---
+
+# Cinematic Timeline
+
+The Timeline Planner converts ordered scenes into deterministic production timing.
+
+```python
+from ai_cinematic_workflow import (
+    build_timeline,
+    format_timestamp,
+)
+
+timeline = build_timeline(
+    project.scenes
+)
+
+for entry in timeline.entries:
+    print(
+        entry.scene_id,
+        format_timestamp(
+            entry.start_seconds
+        ),
+        format_timestamp(
+            entry.end_seconds
+        ),
+    )
+```
+
+Conceptually:
+
+```text
+Scene 01
+15 seconds
+    ↓
+00:00 → 00:15
+
+Scene 02
+15 seconds
+    ↓
+00:15 → 00:30
+
+Scene 03
+15 seconds
+    ↓
+00:30 → 00:45
+```
+
+The Timeline layer supports ordered scene timing, cumulative duration, timeline validation, gap detection, overlap detection, duplicate scene-ID detection, and serializable timeline reports.
+
+---
+
+# Music Video Structure
+
+Music-video projects can define explicit musical sections and map scenes to those sections.
+
+```python
+from ai_cinematic_workflow import (
+    MusicSection,
+    MusicVideoStructure,
+)
+
+music_structure = MusicVideoStructure(
+    sections=[
+        MusicSection(
+            section_id=1,
+            section_type="intro",
+            start_seconds=0,
+            end_seconds=15,
+            performance_mode="cinematic-only",
+            scene_ids=[1],
+            label="Intro",
+        ),
+        MusicSection(
+            section_id=2,
+            section_type="verse",
+            start_seconds=15,
+            end_seconds=30,
+            performance_mode="vocal",
+            scene_ids=[2],
+            label="Verse",
+        ),
+        MusicSection(
+            section_id=3,
+            section_type="instrumental",
+            start_seconds=30,
+            end_seconds=45,
+            performance_mode="instrumental",
+            scene_ids=[3],
+            label="Instrumental",
+        ),
+    ]
+)
+```
+
+Supported workflow concepts include musical sections such as:
+
+```text
+intro
+verse
+pre-chorus
+chorus
+instrumental
+bridge
+breakdown
+final chorus
+outro
+```
+
+The structure supports scene mapping, chronological validation, duration validation, overlap detection, duplicate mapping detection, and project-scene validation.
+
+---
+
+# Vocal and Instrumental Performance Modes
+
+The toolkit distinguishes performance state from simple scene content.
+
+Structured performance modes include:
+
+```text
+vocal
+instrumental
+dialogue
+performance-only
+cinematic-only
+```
+
+This allows downstream workflow logic to distinguish scenes that require visible vocal performance from scenes where singing mouth movement should not occur.
+
+---
+
+# Lip-Sync Policy
+
+The Lip-Sync Policy Engine resolves lip-sync behavior from structured music-video performance metadata.
+
+```python
+from ai_cinematic_workflow import (
+    resolve_music_video_lip_sync,
+)
+
+policies = (
+    resolve_music_video_lip_sync(
+        music_structure
+    )
+)
+
+for policy in policies:
+    print(
+        policy.section_id,
+        policy.performance_mode,
+        policy.lip_sync_required,
+        policy.lip_sync_mode,
+    )
+```
+
+Typical policy behavior:
+
+```text
+VOCAL
+→ lip-sync required
+
+INSTRUMENTAL
+→ lip-sync disabled
+
+CINEMATIC-ONLY
+→ lip-sync disabled
+
+PERFORMANCE-ONLY
+→ no automatic singing requirement
+```
+
+The core toolkit resolves and validates lip-sync policy but does not perform video generation.
+
+Provider-specific translation belongs to future provider adapters.
+
+---
+
+# DurationPolicy
+
+Scene duration rules are represented through a reusable `DurationPolicy`.
+
+```python
+from ai_cinematic_workflow import (
+    DurationPolicy,
+)
+
+duration_policy = DurationPolicy(
+    preferred_scene_duration=15,
+    minimum_scene_duration=15,
+    maximum_scene_duration=15,
+    allowed_scene_durations=[
+        15,
+    ],
+    tolerance_seconds=0,
+    strict=True,
+)
+```
+
+Duration policies can define:
+
+* Preferred duration
+* Minimum duration
+* Maximum duration
+* Allowed durations
+* Tolerance
+* Strict or advisory enforcement
+
+For music-video projects:
+
+```python
+from ai_cinematic_workflow import (
+    validate_music_video_timing,
+)
+
+timing_result = (
+    validate_music_video_timing(
+        project.scenes,
+        music_structure,
+        duration_policy,
+    )
+)
+
+print(
+    timing_result.is_valid
+)
+```
+
+Music-video timing validation compares scene timing with structured music sections before downstream production.
+
+---
+
+# Advanced Continuity
+
+The toolkit contains both the original lightweight continuity API and an advanced configurable continuity layer.
+
+A `ContinuityProfile` controls how selected fields are treated.
+
+```python
+from ai_cinematic_workflow import (
+    ContinuityProfile,
+    validate_project_continuity,
+)
+
+continuity_profile = ContinuityProfile(
+    name="production-continuity",
+    required_fields=[
+        "characters",
+        "wardrobe",
+        "hair",
+    ],
+    strict_fields=[
+        "characters",
+        "hair",
+    ],
+    warning_fields=[
+        "wardrobe",
+    ],
+    strict=True,
+    missing_required_severity="error",
+)
+
+continuity_result = (
+    validate_project_continuity(
+        project.scenes,
+        continuity_profile,
+    )
+)
+
+print(
+    continuity_result.is_valid
+)
+
+print(
+    continuity_result.error_count
+)
+
+print(
+    continuity_result.warning_count
+)
+```
+
+Advanced continuity supports concepts such as:
+
+```text
+required fields
+optional fields
+ignored fields
+strict fields
+warning-only fields
+allowed intentional changes
+native Scene fields
+custom continuity metadata
+```
+
+Creative transitions do not have to be treated as hard errors.
+
+---
+
+# GlobalConstraints
+
+Project-wide cinematic constraints can be represented once and resolved together with scene-level constraints.
+
+```python
+from ai_cinematic_workflow import (
+    GlobalConstraints,
+    resolve_project_constraints,
+)
+
+constraints = GlobalConstraints(
+    name="cinematic-production",
+    required_constraints=[
+        "maintain cinematic realism",
+    ],
+    advisory_constraints=[
+        "preserve natural body movement",
+    ],
+    negative_constraints=[
+        "distorted face",
+        "extra fingers",
+    ],
+    prohibited_elements=[
+        "duplicate limbs",
+    ],
+    character_identity_constraints=[
+        "preserve lead performer identity",
+    ],
+    visual_style_constraints=[
+        "cinematic photorealism",
+    ],
+    camera_constraints=[
+        "avoid unstable camera shake",
+    ],
+    environment_constraints=[
+        "preserve environment geometry",
+    ],
+)
+
+resolution = (
+    resolve_project_constraints(
+        project.scenes,
+        constraints,
+    )
+)
+```
+
+Conceptual resolution:
+
+```text
+Global Constraints
+        +
+Scene Constraints
+        ↓
+Normalization
+        ↓
+Deduplication
+        ↓
+Resolved Scene Constraints
+```
+
+Constraint resolution is designed to avoid mutating the source scene data.
+
+---
+
+# PromptProfile
+
+Reusable Prompt Profiles control which cinematic prompt components are active.
+
+```python
+from ai_cinematic_workflow import (
+    PromptProfile,
+    resolve_prompt_profile,
+)
+
+profile = PromptProfile(
+    name="cinematic-profile",
+    enabled_components=[
+        "characters",
+        "location",
+        "camera",
+        "performance",
+        "lighting",
+        "mood",
+        "dialogue_or_vocals",
+        "continuity",
+        "global_constraints",
+        "negative_constraints",
+    ],
+)
+
+resolved_profile = (
+    resolve_prompt_profile(
+        profile
+    )
+)
+```
+
+Canonical prompt components include:
+
+```text
+characters
+location
+camera
+performance
+lighting
+mood
+dialogue_or_vocals
+continuity
+global_constraints
+negative_constraints
+```
+
+Prompt Profiles support reusable configuration, inheritance, runtime component overrides, validation, and non-mutating resolution.
+
+---
+
+# Structured Prompt Sections
+
+The Structured Prompt layer converts scene information into explicit reusable components.
+
+```python
+from ai_cinematic_workflow import (
+    assemble_structured_prompt,
+)
+
+structured = (
+    assemble_structured_prompt(
+        project.scenes[0],
+        prompt_profile=resolved_profile,
+        global_constraints=constraints,
+    )
+)
+
+print(
+    structured.included_components
+)
+
+for section in structured.sections:
+    print(
+        section.section_id,
+        section.content,
+    )
+```
+
+Canonical Structured Prompt Sections are:
+
+```text
+characters
+location
+camera
+performance
+lighting
+mood
+dialogue_or_vocals
+continuity
+global_constraints
+negative_constraints
+```
+
+The structured prompt system provides:
+
+* Deterministic section ordering
+* Included-component reporting
+* Omitted-component reporting
+* Empty-component handling
+* PromptProfile control
+* GlobalConstraints integration
+* Resolved negative constraints
+* Structured metadata
+* JSON-serializable results
+* Non-mutating assembly
+
+The original `build_cinematic_prompt()` API remains available.
+
+---
+
+# Enhanced Project Export
+
+The toolkit supports both legacy project export and a configurable Enhanced Project Export.
+
+Enhanced export uses `ProjectExportOptions` to select project layers.
+
+```python
+from ai_cinematic_workflow import (
+    ProjectExportOptions,
+)
+
+from ai_cinematic_workflow.exporters.project_json_exporter import (
+    project_to_dict,
+)
+
+options = ProjectExportOptions(
+    name="portable-project",
+    include_timeline=True,
+    include_workflow=True,
+    include_structured_prompts=True,
+)
+
+data = project_to_dict(
+    project,
+    export_options=options,
+)
+
+print(
+    data[
+        "manifest"
+    ][
+        "included_sections"
+    ]
+)
+```
+
+Enhanced export can control inclusion of:
+
+```text
+project
+timeline
+workflow
+duration_validation
+continuity_validation
+global_constraints
+prompt_profile
+structured_prompts
+```
+
+The export manifest reports:
+
+* Export configuration
+* Included sections
+* Omitted sections
+* Omission reasons
+* Active optional production systems
+* Deterministic export structure
+
+Conceptual enhanced package:
+
+```text
+Manifest
+    ↓
+Project
+    ↓
+Timeline
+    ↓
+Workflow
+    ↓
+Duration Validation
+    ↓
+Continuity Validation
+    ↓
+Global Constraints
+    ↓
+Prompt Profile
+    ↓
+Structured Prompts
+```
+
+Optional layers are controlled by `ProjectExportOptions` and available source data.
+
+---
+
+# JSON Persistence
+
+Portable project output can be written directly to JSON.
 
 ```python
 from ai_cinematic_workflow.exporters.project_json_exporter import (
@@ -199,436 +854,475 @@ from ai_cinematic_workflow.exporters.project_json_exporter import (
 save_project_json(
     project,
     "output/project.json",
+    export_options=options,
 )
 ```
 
-The exported JSON contains:
+The exporter remains provider-neutral.
 
-* Project metadata
-* Project duration
-* Scene count
-* Raw scene data
-* Generated cinematic prompts
-* Normalized negative prompts
-* Continuity reports
-* Workflow validation results
-* Processing summary
+Enhanced Project Export packages production information but does not perform provider-specific API translation or network execution.
 
 ---
 
-## ▶️ Run the Example Project
+# Platform Adapter Foundation
 
-A runnable three-scene music-video demonstration is included:
+The v0.2.0 development architecture includes a provider-neutral Platform Adapter foundation.
+
+It defines a clean boundary between structured cinematic data and future provider-specific integrations.
+
+```python
+from ai_cinematic_workflow import (
+    PlatformAdapter,
+    PlatformAdapterCapabilities,
+    PlatformAdapterRegistry,
+)
+
+adapter = PlatformAdapter(
+    platform_id=(
+        "Example Video Platform"
+    ),
+    display_name=(
+        "Example Video Platform"
+    ),
+    capabilities=(
+        PlatformAdapterCapabilities(
+            supported_prompt_sections=[
+                "characters",
+                "location",
+                "camera",
+                "performance",
+                "lighting",
+                "negative_constraints",
+            ],
+        )
+    ),
+)
+
+registry = (
+    PlatformAdapterRegistry()
+)
+
+registry.register(
+    adapter
+)
+
+resolved_adapter = registry.get(
+    "example-video-platform"
+)
+
+adapter_result = (
+    resolved_adapter
+    .adapt_structured_prompt(
+        structured
+    )
+)
+
+print(
+    adapter_result.supported_features
+)
+
+print(
+    adapter_result.unsupported_features
+)
+```
+
+The Platform Adapter foundation provides:
+
+```text
+PlatformAdapter
+PlatformAdapterCapabilities
+PlatformAdapterIssue
+PlatformAdapterResult
+PlatformAdapterRegistry
+canonical platform identifier normalization
+capability declarations
+supported-feature reporting
+unsupported-feature reporting
+structured warnings and errors
+deterministic adapter results
+JSON-serializable results
+registry lookup
+duplicate registration protection
+unknown adapter handling
+non-mutating adaptation
+```
+
+The base adapter layer remains provider-neutral.
+
+---
+
+# Provider Boundary
+
+The current toolkit does **not** claim to contain production-ready provider-specific WAN, Veo, Kling, or other external AI-video adapters.
+
+Current architecture:
+
+```text
+Core Cinematic Project
+          ↓
+Structured Prompt Sections
+          ↓
+Enhanced Project Export
+          ↓
+Platform Adapter Foundation
+          ↓
+Future Provider-Specific Adapters
+```
+
+Planned future production-adapter architecture:
+
+```text
+Platform Adapter Foundation
+          ↓
+ ┌────────┼─────────┐
+ ↓        ↓         ↓
+WAN      Veo       Kling
+Adapter  Adapter    Adapter
+```
+
+Provider-specific adapters belong to future Production Adapters work.
+
+The core toolkit does not require:
+
+```text
+provider API keys
+provider credentials
+network execution
+undocumented provider parameters
+```
+
+This separation helps keep the core reusable across different production environments.
+
+---
+
+# Runnable v0.2.0 Music-Video Example
+
+A complete provider-neutral end-to-end demonstration is included:
 
 ```bash
 python examples/music_video_project.py
 ```
 
-The example demonstrates:
+The example currently demonstrates:
 
-* Project creation
-* Multi-scene processing
-* Cinematic prompt generation
-* Negative-prompt normalization
-* Scene-to-scene continuity detection
-* Complete project JSON export
+* `CinematicProject`
+* Three ordered cinematic scenes
+* Multi-scene workflow processing
+* Cinematic Timeline
+* Music Video Structure
+* Scene-to-music-section mapping
+* Vocal and instrumental performance modes
+* Lip-Sync Policy
+* DurationPolicy
+* Music-video timing validation
+* ContinuityProfile
+* GlobalConstraints
+* PromptProfile
+* Structured Prompt Sections
+* Enhanced Project Export
+* ProjectExportOptions
+* ProjectExportManifest
+* PlatformAdapter
+* PlatformAdapterRegistry
+* Supported and unsupported adapter reporting
+* JSON persistence
+* Provider-neutral execution
 
-The example intentionally introduces a wardrobe change in Scene 3 so the continuity engine can demonstrate mismatch detection.
-
-Generated files are written locally to:
+The demonstration project is named:
 
 ```text
-examples/output/
+Neon Echoes
 ```
+
+It contains:
+
+```text
+3 scenes
+15 seconds per scene
+45 seconds total
+```
+
+Scene 3 intentionally changes wardrobe so the continuity systems have a visible continuity event to report.
+
+Generated project output is written to:
+
+```text
+examples/output/music_video_project.json
+```
+
+The example requires no external AI-video API, API key, or network connection.
 
 ---
 
-## 🧪 Running Tests
+# Testing
 
-Run the complete automated test suite:
+Install development dependencies:
 
 ```bash
-pytest
+python -m pip install -e ".[dev]"
 ```
 
-The repository also uses GitHub Actions to automatically test supported Python versions.
+Run the complete test suite:
 
-Current CI coverage includes:
+```bash
+pytest -q
+```
 
-* Core scene validation
-* JSON serialization
-* Prompt generation
-* Negative-constraint validation
-* Continuity analysis
-* Workflow-engine processing
-* Cinematic project validation
-* Complete project JSON export
-* Runnable example validation
+Run the runnable example directly:
 
----
+```bash
+python examples/music_video_project.py
+```
 
-## 🏗 Current Architecture
+The repository uses GitHub Actions to test:
 
 ```text
-Creative / Production Input
-            ↓
-        Scene Model
-            ↓
-        Validation
-            ↓
-   Negative Processing
-            ↓
-   Continuity Analysis
-            ↓
-      Prompt Builder
-            ↓
-      Workflow Engine
-            ↓
-      Project Model
-            ↓
-       JSON Export
-            ↓
-Downstream AI / Production Tools
+Python 3.10
+Python 3.11
+Python 3.12
+Python 3.13
 ```
 
-The core architecture is designed to remain platform-agnostic so platform-specific integrations can be added separately without tightly coupling the toolkit to one AI-video provider.
-
----
-
-## ✅ Current Capabilities
-
-The current development version includes:
-
-* ✅ Structured cinematic Scene model
-* ✅ Camera model
-* ✅ Scene validation
-* ✅ Cinematic Prompt Builder
-* ✅ Negative Constraint Validator
-* ✅ Negative-prompt normalization and deduplication
-* ✅ Scene Continuity Validator
-* ✅ Multi-scene Workflow Engine
-* ✅ Cinematic Project model
-* ✅ Project-level validation
-* ✅ Scene and project JSON exporters
-* ✅ Runnable music-video example
-* ✅ Automated pytest suite
-* ✅ Multi-version GitHub Actions CI
-* ✅ Public Python package API
-
-Additional production tools are under active development.
-
-AI video production often requires many separate steps:
-
-* Story and concept analysis
-* Scene breakdown
-* Character continuity
-* Shot planning
-* Camera direction
-* Lighting design
-* Character movement and blocking
-* Music and vocal synchronization
-* Prompt construction
-* Negative prompt validation
-* Scene-to-scene continuity
-* Exporting structured production data
-
-AI Cinematic Workflow Toolkit aims to organize these tasks into a reusable and transparent open-source workflow.
-
-The long-term goal is to provide creators, filmmakers, developers, and AI researchers with a practical framework for building consistent cinematic AI-video pipelines.
-
----
-
-## ✨ Project Goals
-
-The toolkit is being developed around five main goals:
-
-### 1. Structured Scene Planning
-
-Convert a story, script, music track, or creative brief into clearly defined cinematic scenes.
-
-Each scene may contain structured information such as:
-
-* Scene ID
-* Duration
-* Location
-* Characters
-* Character actions
-* Camera movement
-* Shot type
-* Lighting
-* Mood
-* Dialogue or vocals
-* Continuity information
-
-### 2. Cinematic Prompt Structuring
-
-Create a consistent prompt structure for AI video generation.
-
-Prompt components may include:
-
-* Subject
-* Environment
-* Performance
-* Blocking
-* Camera
-* Lens
-* Lighting
-* Motion
-* Atmosphere
-* Visual style
-* Continuity constraints
-* Negative constraints
-
-### 3. Character & Scene Continuity
-
-Help maintain consistency between consecutive scenes.
-
-Planned continuity checks include:
-
-* Character appearance
-* Wardrobe
-* Props
-* Location
-* Lighting
-* Screen direction
-* Emotional state
-* Camera position
-* Previous-scene state
-
-### 4. Music & Performance Workflows
-
-Support music-video and performance-oriented productions.
-
-Planned workflow rules include:
-
-* Vocal scene detection
-* Instrumental scene detection
-* Lip-sync requirements
-* Non-vocal performance handling
-* Song-section mapping
-* Scene duration planning
-* Intro / verse / chorus / bridge / outro mapping
-
-### 5. Structured Export
-
-Allow cinematic workflow information to be represented in portable formats such as:
-
-* Markdown
-* JSON
-* YAML
-* Structured text prompts
-
-This makes the workflow easier to integrate with different AI tools and production environments.
-
----
-
-## 🧩 Planned Core Modules
-
-The project roadmap currently includes:
+CI currently performs:
 
 ```text
-ai-cinematic-workflow-toolkit/
-│
-├── src/
-│   ├── scene_planner/
-│   ├── prompt_builder/
-│   ├── continuity/
-│   ├── validators/
-│   └── exporters/
-│
-├── schemas/
-│   ├── scene.schema.json
-│   └── project.schema.json
-│
-├── examples/
-│   ├── cinematic/
-│   └── music-video/
-│
-├── docs/
-│
-├── tests/
-│
-├── CONTRIBUTING.md
-├── LICENSE
-└── README.md
+Repository checkout
+      ↓
+Python setup
+      ↓
+Development installation
+      ↓
+pytest -q
+      ↓
+Runnable music-video example
+      ↓
+Generated JSON validation
 ```
 
-The structure may evolve as development progresses.
+Automated tests cover the implemented core behavior, including scene processing, timeline planning, music-video structure, lip-sync policy, duration validation, continuity, global constraints, prompt profiles, structured prompts, Enhanced Project Export, Platform Adapter foundation, and runnable-example behavior.
 
 ---
 
-## 🛠 Planned Features
+# Current Public API Areas
 
-* [ ] Story-to-scene breakdown
-* [ ] Cinematic scene schema
-* [ ] Prompt structure generator
-* [ ] Negative-prompt validator
-* [ ] Character continuity checker
-* [ ] Scene continuity checker
-* [ ] Camera and shot metadata
-* [ ] Music-video timeline planner
-* [ ] Vocal / instrumental scene rules
-* [ ] Lip-sync metadata
-* [ ] JSON export
-* [ ] YAML export
-* [ ] Markdown production report
-* [ ] Command-line interface
-* [ ] Automated tests
-* [ ] Example projects
-* [ ] Developer documentation
-
----
-
-## 🎥 Example Scene Structure
-
-A future structured scene may look conceptually like this:
-
-```json
-{
-  "scene_id": 1,
-  "duration_seconds": 15,
-  "location": "cinematic interior",
-  "characters": [],
-  "camera": {
-    "shot": "medium shot",
-    "movement": "slow dolly in"
-  },
-  "lighting": "soft cinematic lighting",
-  "performance": "",
-  "continuity": {},
-  "negative_constraints": []
-}
-```
-
-This is an illustrative schema and may change during development.
-
----
-
-## 🔄 Workflow Concept
-
-A typical pipeline is expected to follow this structure:
+The public Python package exposes APIs for:
 
 ```text
-Creative Input
-      ↓
-Story / Music Analysis
-      ↓
-Scene Breakdown
-      ↓
-Character & Environment Definition
-      ↓
-Cinematic Shot Planning
-      ↓
-Prompt Construction
-      ↓
-Continuity Validation
-      ↓
-Negative Constraint Validation
-      ↓
-Structured Export
-      ↓
-AI Video Generation
-      ↓
-Editing / Post-production
+Camera and Scene
+CinematicProject and ProjectMetadata
+
+Basic Continuity
+Advanced Continuity
+ContinuityProfile
+
+DurationPolicy
+Timeline
+
+MusicSection
+MusicVideoStructure
+Music-video timing validation
+
+Lip-Sync Policy
+
+GlobalConstraints
+
+PromptProfile
+ResolvedPromptProfile
+
+StructuredPromptSection
+StructuredPromptResult
+
+ProjectExportOptions
+ProjectExportManifest
+OmittedExportSection
+
+PlatformAdapter
+PlatformAdapterCapabilities
+PlatformAdapterIssue
+PlatformAdapterResult
+PlatformAdapterRegistry
+
+Prompt Builder
+Negative Constraint utilities
+Workflow Engine
 ```
 
-The toolkit focuses primarily on the planning, structuring, validation, and export stages.
+Public APIs are intended to evolve carefully with backward compatibility where practical.
 
 ---
 
-## 🌐 Platform-Agnostic Design
+# Architecture Principles
 
-The project is intended to remain as platform-independent as possible.
+## Platform-Agnostic Core
 
-Instead of depending entirely on one AI video provider, the toolkit focuses on reusable cinematic production concepts and structured data that can potentially be adapted to different generation systems.
+Core cinematic models and validation should not unnecessarily depend on one AI-video provider.
 
-Platform-specific adapters may be developed separately.
+Provider-specific behavior belongs behind explicit adapter boundaries.
 
----
+## Structured Data First
 
-## 🗺 Roadmap
+Important cinematic information should be represented as structured data whenever practical.
 
-### Phase 1 — Foundation
+Structured data should remain inspectable, reusable, serializable, and testable.
 
-* Define the project architecture
-* Create scene and project schemas
-* Define cinematic prompt components
-* Create initial documentation
+## Validation Before Generation
 
-### Phase 2 — Core Toolkit
+Potential production problems should be detected before data is passed downstream.
 
-* Scene planner
-* Prompt builder
-* Validation system
-* Continuity engine
-* Export system
+Validation should produce actionable structured results where practical.
 
-### Phase 3 — Music Video Tools
+## Creative Flexibility
 
-* Timeline segmentation
-* Vocal / instrumental detection metadata
-* Performance rules
-* Lip-sync scene metadata
+Continuity systems should identify possible inconsistencies without treating every intentional cinematic transition as an error.
 
-### Phase 4 — Developer Tools
+## Portable Output
 
-* CLI interface
-* Automated tests
-* Example projects
-* Integration documentation
+Project information should remain exportable into reusable structured formats.
 
-### Phase 5 — Community Development
+Portable project packaging and provider-specific transformation remain separate responsibilities.
 
-* Feature requests
-* Community workflow templates
-* Additional exporters
-* Platform adapters
-* Contributor documentation
+## Non-Mutating Processing
+
+Validation, constraint resolution, prompt resolution, export processing, and platform adaptation should avoid modifying source production data unless mutation is explicitly documented.
+
+## Deterministic Behavior
+
+Canonical identifiers, prompt-section ordering, export ordering, registry output, and structured results should remain deterministic whenever practical.
+
+## Testable Behavior
+
+New core behavior should include automated tests appropriate to its scope.
 
 ---
 
-## 🤝 Contributing
+# Development Roadmap
+
+The development roadmap is maintained in:
+
+```text
+ROADMAP.md
+```
+
+High-level direction:
+
+```text
+v0.1.0
+Foundation
+RELEASED
+    ↓
+v0.2.0
+Cinematic Timeline &
+Music Video Foundation
+IN PROGRESS
+    ↓
+v0.3.0
+Production Adapters
+FUTURE
+    ↓
+v0.4.0
+Command-Line Interface
+FUTURE
+```
+
+The v0.2.0 milestone focuses on provider-neutral cinematic and music-video production architecture.
+
+Concrete provider-specific adapters remain future work.
+
+See [ROADMAP.md](ROADMAP.md) for the detailed development plan.
+
+---
+
+# Changelog
+
+Development history and release notes are maintained in:
+
+```text
+CHANGELOG.md
+```
+
+See [CHANGELOG.md](CHANGELOG.md) for implemented features, fixes, planned work, and release history.
+
+---
+
+# Contributing
 
 Contributions are welcome.
 
-As the project develops, contributors will be able to help with:
+Please read:
 
-* Workflow design
+```text
+CONTRIBUTING.md
+```
+
+before submitting changes.
+
+Potential contribution areas include:
+
 * Python development
-* JSON schemas
 * Testing
+* Cinematic workflow design
+* Music-video workflow design
+* Validation systems
+* Continuity logic
+* Structured prompt systems
+* Export formats
 * Documentation
-* Cinematic production rules
-* Prompt engineering research
-* AI-video workflow integrations
+* Examples
+* Future provider adapters
 
-A dedicated `CONTRIBUTING.md` guide will be maintained as the project grows.
+If you find a bug or have an idea for a feature, open a GitHub Issue using the repository templates.
 
-If you find a bug or have an idea for a feature, feel free to open an Issue.
+Pull Requests should remain focused, testable, documented, and consistent with the project architecture.
 
----
-
-## 🔬 Development Philosophy
-
-This project aims to keep AI cinematic workflows:
-
-**Structured · Reproducible · Portable · Transparent · Creator-friendly**
-
-AI generation tools evolve quickly. The project therefore focuses on fundamental production concepts rather than relying exclusively on temporary platform-specific behavior.
+See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ---
 
-## ⚠️ Disclaimer
+# Security
+
+Security-related reporting guidance is maintained in:
+
+```text
+SECURITY.md
+```
+
+Please use the documented security-reporting process rather than publishing sensitive vulnerability details in a normal public Issue.
+
+See [SECURITY.md](SECURITY.md).
+
+---
+
+# Open-Source Development
+
+AI Cinematic Workflow Toolkit is developed publicly.
+
+The repository aims to make its evolution visible through:
+
+* Source-code history
+* Public Issues
+* Automated tests
+* CI
+* Documentation
+* CHANGELOG updates
+* ROADMAP updates
+* Releases
+* Community contributions
+
+The project prioritizes real, testable implementation over unsupported feature claims.
+
+---
+
+# Disclaimer
 
 This is an independent open-source project.
 
-It is not affiliated with, endorsed by, or sponsored by any AI video platform or model provider unless explicitly stated.
+It is not affiliated with, endorsed by, or sponsored by WAN, Veo, Kling, or any other AI-video platform or model provider unless explicitly stated.
 
-Users are responsible for complying with the terms, licenses, and policies of any third-party platforms used with this toolkit.
+Users are responsible for complying with the terms, licenses, usage requirements, and policies of any third-party services used with the toolkit.
 
 ---
 
-## 📄 License
+# License
 
 This project is released under the **MIT License**.
 
@@ -636,10 +1330,6 @@ See [LICENSE](LICENSE) for details.
 
 ---
 
-## ⭐ Project Development
+# Project Direction
 
-AI Cinematic Workflow Toolkit is being developed publicly and incrementally.
-
-The repository will document its evolution through source-code commits, issues, releases, tests, documentation, and community contributions.
-
-Feedback and constructive contributions are welcome.
+**Structured · Reproducible · Portable · Transparent · Creator-friendly**
