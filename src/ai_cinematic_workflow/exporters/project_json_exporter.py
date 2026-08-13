@@ -1,15 +1,18 @@
 """
 Complete cinematic project JSON exporter.
 
-This module validates a CinematicProject, builds its cinematic
-timeline, optionally applies configurable duration validation,
-advanced continuity validation, project-wide global constraints,
-reusable prompt-profile resolution, and structured prompt assembly.
+This module validates a CinematicProject and supports both the
+original backward-compatible project export behavior and the
+optional Enhanced Project Export layer.
 
-Music-video lip-sync policies are resolved automatically when
-applicable.
+Enhanced exports may include reusable ProjectExportOptions,
+a canonical ProjectExportManifest, configurable project layers,
+PromptProfile resolution, GlobalConstraints, Structured Prompt
+Sections, duration validation, continuity validation, timeline,
+workflow processing, and portable JSON persistence.
 
-All optional systems preserve backward compatibility when omitted.
+Provider-specific WAN, Veo, Kling, or other adapter behavior does
+not belong in this module.
 """
 
 import json
@@ -23,6 +26,11 @@ from ..continuity_profiles import (
 from ..duration import (
     DurationPolicy,
     validate_scene_duration,
+)
+from ..export_options import (
+    PROJECT_EXPORT_SECTION_ORDER,
+    ProjectExportOptions,
+    build_project_export_manifest,
 )
 from ..global_constraints import (
     GlobalConstraints,
@@ -319,14 +327,15 @@ def _validate_prompt_profile_request(
         )
 
 
-def _validate_structured_prompt_request(
+def _validate_legacy_structured_prompt_request(
     *,
     include_structured_prompts: bool,
     include_empty_prompt_sections: bool,
 ) -> None:
     """
-    Reject structured-prompt options that would otherwise
-    be silently ignored.
+    Validate legacy Structured Prompt export flags.
+
+    These flags remain supported for backward compatibility.
     """
 
     if (
@@ -337,6 +346,121 @@ def _validate_structured_prompt_request(
             "include_structured_prompts must be True "
             "when include_empty_prompt_sections is enabled"
         )
+
+
+def _validate_enhanced_export_request(
+    export_options: ProjectExportOptions,
+    *,
+    legacy_include_structured_prompts: bool,
+    legacy_include_empty_prompt_sections: bool,
+) -> None:
+    """
+    Validate Enhanced Project Export configuration and
+    reject contradictory legacy Structured Prompt flags.
+
+    False legacy values are treated as their historical defaults.
+    True legacy values may be supplied redundantly when they agree
+    with ProjectExportOptions.
+    """
+
+    option_errors = export_options.validate()
+
+    if option_errors:
+        raise ValueError(
+            "Invalid project export options: "
+            + "; ".join(
+                option_errors
+            )
+        )
+
+    if (
+        legacy_include_structured_prompts
+        and not export_options.include_structured_prompts
+    ):
+        raise ValueError(
+            "Conflicting structured prompt export configuration: "
+            "include_structured_prompts=True but "
+            "ProjectExportOptions disables structured prompts"
+        )
+
+    if (
+        legacy_include_empty_prompt_sections
+        and not export_options.include_empty_prompt_sections
+    ):
+        raise ValueError(
+            "Conflicting empty prompt-section configuration: "
+            "include_empty_prompt_sections=True but "
+            "ProjectExportOptions disables empty prompt sections"
+        )
+
+
+def _build_enhanced_omission_reasons(
+    options: ProjectExportOptions,
+    *,
+    duration_policy: DurationPolicy | None,
+    continuity_profile: ContinuityProfile | None,
+    global_constraints: GlobalConstraints | None,
+    prompt_profile: PromptProfile | None,
+) -> dict[str, str]:
+    """
+    Build explicit reasons for canonical sections that are
+    absent from an Enhanced Project Export.
+    """
+
+    reasons: dict[str, str] = {}
+
+    if not options.include_timeline:
+        reasons[
+            "timeline"
+        ] = "disabled_by_export_options"
+
+    if not options.include_workflow:
+        reasons[
+            "workflow"
+        ] = "disabled_by_export_options"
+
+    if not options.include_duration_validation:
+        reasons[
+            "duration_validation"
+        ] = "disabled_by_export_options"
+    elif duration_policy is None:
+        reasons[
+            "duration_validation"
+        ] = "missing_duration_policy"
+
+    if not options.include_continuity_validation:
+        reasons[
+            "continuity_validation"
+        ] = "disabled_by_export_options"
+    elif continuity_profile is None:
+        reasons[
+            "continuity_validation"
+        ] = "missing_continuity_profile"
+
+    if not options.include_global_constraints:
+        reasons[
+            "global_constraints"
+        ] = "disabled_by_export_options"
+    elif global_constraints is None:
+        reasons[
+            "global_constraints"
+        ] = "missing_global_constraints"
+
+    if not options.include_prompt_profile:
+        reasons[
+            "prompt_profile"
+        ] = "disabled_by_export_options"
+    elif prompt_profile is None:
+        reasons[
+            "prompt_profile"
+        ] = "missing_prompt_profile"
+
+    if not options.include_structured_prompts:
+        reasons[
+            "structured_prompts"
+        ] = "disabled_by_export_options"
+
+    return reasons
 
 
 def project_to_dict(
@@ -355,33 +479,45 @@ def project_to_dict(
     prompt_resolved_name: str | None = None,
     include_structured_prompts: bool = False,
     include_empty_prompt_sections: bool = False,
+    export_options: ProjectExportOptions | None = None,
 ) -> dict[str, Any]:
     """
-    Process and convert a complete cinematic project
-    into structured serializable data.
+    Process and convert a complete cinematic project into
+    structured serializable data.
 
-    Optional systems:
+    Legacy mode
+    -----------
 
-    - DurationPolicy
-    - ContinuityProfile
-    - GlobalConstraints
-    - PromptProfile
-    - Structured Prompt Sections
+    When export_options is omitted, behavior remains compatible
+    with the existing exporter:
 
-    Structured Prompt Sections remain opt-in and platform-agnostic.
+    - project is included
+    - timeline is included
+    - workflow is included
+    - supplied optional production systems are exported
+    - Structured Prompt Sections remain controlled by the
+      legacy include_structured_prompts flags
 
-    When include_structured_prompts=True, one
-    StructuredPromptResult is assembled for every Scene.
+    Enhanced mode
+    -------------
 
-    When a PromptProfile is supplied, the same resolved profile
-    is reused by structured prompt assembly.
+    When ProjectExportOptions is supplied:
 
-    When GlobalConstraints are supplied, structured prompt assembly
-    may include project-wide constraint data and resolved project +
-    Scene negative constraints.
+    - project remains mandatory
+    - timeline and workflow become explicitly configurable
+    - optional top-level production layers are controlled by
+      ProjectExportOptions
+    - requested layers without required source data are omitted
+      and reported in the ProjectExportManifest
+    - Structured Prompt Sections are controlled by
+      ProjectExportOptions
+    - a canonical manifest is added to the result
 
-    Existing exports remain backward-compatible when optional
-    systems are omitted.
+    PromptProfile and GlobalConstraints may still be used
+    internally by Structured Prompt assembly even when their
+    own top-level export sections are disabled.
+
+    Provider-specific rendering is never performed here.
     """
 
     errors = project.validate()
@@ -452,14 +588,89 @@ def project_to_dict(
         ),
     )
 
-    _validate_structured_prompt_request(
-        include_structured_prompts=(
-            include_structured_prompts
-        ),
-        include_empty_prompt_sections=(
-            include_empty_prompt_sections
-        ),
+    enhanced_mode = (
+        export_options is not None
     )
+
+    if enhanced_mode:
+        _validate_enhanced_export_request(
+            export_options,
+            legacy_include_structured_prompts=(
+                include_structured_prompts
+            ),
+            legacy_include_empty_prompt_sections=(
+                include_empty_prompt_sections
+            ),
+        )
+
+        include_timeline_section = (
+            export_options.include_timeline
+        )
+
+        include_workflow_section = (
+            export_options.include_workflow
+        )
+
+        include_duration_section = (
+            export_options.include_duration_validation
+        )
+
+        include_continuity_section = (
+            export_options.include_continuity_validation
+        )
+
+        include_global_section = (
+            export_options.include_global_constraints
+        )
+
+        include_prompt_profile_section = (
+            export_options.include_prompt_profile
+        )
+
+        include_structured_section = (
+            export_options.include_structured_prompts
+        )
+
+        effective_include_empty_sections = (
+            export_options.include_empty_prompt_sections
+        )
+
+    else:
+        _validate_legacy_structured_prompt_request(
+            include_structured_prompts=(
+                include_structured_prompts
+            ),
+            include_empty_prompt_sections=(
+                include_empty_prompt_sections
+            ),
+        )
+
+        include_timeline_section = True
+        include_workflow_section = True
+
+        include_duration_section = (
+            duration_policy is not None
+        )
+
+        include_continuity_section = (
+            continuity_profile is not None
+        )
+
+        include_global_section = (
+            global_constraints is not None
+        )
+
+        include_prompt_profile_section = (
+            prompt_profile is not None
+        )
+
+        include_structured_section = (
+            include_structured_prompts
+        )
+
+        effective_include_empty_sections = (
+            include_empty_prompt_sections
+        )
 
     resolved_prompt_profile: (
         ResolvedPromptProfile | None
@@ -514,14 +725,6 @@ def project_to_dict(
 
     project_data = project.to_dict()
 
-    timeline_result = build_timeline(
-        project.scenes
-    )
-
-    workflow_results = process_project(
-        project.scenes
-    )
-
     if project.music_video_structure is not None:
         lip_sync_results = (
             resolve_music_video_lip_sync(
@@ -573,10 +776,25 @@ def project_to_dict(
 
     export_data: dict[str, Any] = {
         "project": project_data,
-        "timeline": (
-            timeline_result.to_dict()
-        ),
-        "workflow": {
+    }
+
+    if include_timeline_section:
+        timeline_result = build_timeline(
+            project.scenes
+        )
+
+        export_data[
+            "timeline"
+        ] = timeline_result.to_dict()
+
+    if include_workflow_section:
+        workflow_results = process_project(
+            project.scenes
+        )
+
+        export_data[
+            "workflow"
+        ] = {
             "scene_results": [
                 result.to_dict()
                 for result in workflow_results
@@ -602,10 +820,12 @@ def project_to_dict(
                     for result in workflow_results
                 ),
             },
-        },
-    }
+        }
 
-    if duration_policy is not None:
+    if (
+        include_duration_section
+        and duration_policy is not None
+    ):
         export_data[
             "duration_validation"
         ] = _build_duration_validation(
@@ -613,7 +833,10 @@ def project_to_dict(
             duration_policy,
         )
 
-    if continuity_profile is not None:
+    if (
+        include_continuity_section
+        and continuity_profile is not None
+    ):
         export_data[
             "continuity_validation"
         ] = _build_continuity_validation(
@@ -621,7 +844,10 @@ def project_to_dict(
             continuity_profile,
         )
 
-    if global_constraints is not None:
+    if (
+        include_global_section
+        and global_constraints is not None
+    ):
         export_data[
             "global_constraints"
         ] = _build_global_constraints(
@@ -629,14 +855,17 @@ def project_to_dict(
             global_constraints,
         )
 
-    if resolved_prompt_profile is not None:
+    if (
+        include_prompt_profile_section
+        and resolved_prompt_profile is not None
+    ):
         export_data[
             "prompt_profile"
         ] = _build_prompt_profile(
             resolved_prompt_profile
         )
 
-    if include_structured_prompts:
+    if include_structured_section:
         export_data[
             "structured_prompts"
         ] = _build_structured_prompts(
@@ -648,9 +877,49 @@ def project_to_dict(
                 global_constraints
             ),
             include_empty_sections=(
-                include_empty_prompt_sections
+                effective_include_empty_sections
             ),
         )
+
+    if enhanced_mode:
+        included_sections = [
+            section
+            for section in PROJECT_EXPORT_SECTION_ORDER
+            if section in export_data
+        ]
+
+        omission_reasons = (
+            _build_enhanced_omission_reasons(
+                export_options,
+                duration_policy=(
+                    duration_policy
+                ),
+                continuity_profile=(
+                    continuity_profile
+                ),
+                global_constraints=(
+                    global_constraints
+                ),
+                prompt_profile=(
+                    prompt_profile
+                ),
+            )
+        )
+
+        manifest = build_project_export_manifest(
+            export_options,
+            included_sections=(
+                included_sections
+            ),
+            omission_reasons=(
+                omission_reasons
+            ),
+        )
+
+        export_data = {
+            "manifest": manifest.to_dict(),
+            **export_data,
+        }
 
     return export_data
 
@@ -672,6 +941,7 @@ def project_to_json(
     prompt_resolved_name: str | None = None,
     include_structured_prompts: bool = False,
     include_empty_prompt_sections: bool = False,
+    export_options: ProjectExportOptions | None = None,
 ) -> str:
     """Convert a complete cinematic project into JSON."""
 
@@ -711,6 +981,9 @@ def project_to_json(
             include_empty_prompt_sections=(
                 include_empty_prompt_sections
             ),
+            export_options=(
+                export_options
+            ),
         ),
         indent=indent,
         ensure_ascii=False,
@@ -735,6 +1008,7 @@ def save_project_json(
     prompt_resolved_name: str | None = None,
     include_structured_prompts: bool = False,
     include_empty_prompt_sections: bool = False,
+    export_options: ProjectExportOptions | None = None,
 ) -> Path:
     """
     Validate, process, and save a complete cinematic project
@@ -785,6 +1059,9 @@ def save_project_json(
         ),
         include_empty_prompt_sections=(
             include_empty_prompt_sections
+        ),
+        export_options=(
+            export_options
         ),
     )
 
