@@ -106,6 +106,38 @@ The project follows a simple versioned release process. Versions may evolve towa
 - Backward compatibility with existing scene-level negative constraints
 - Coexistence with DurationPolicy and ContinuityProfile validation
 - Automated Global Constraints unit and project integration tests
+- Reusable Prompt Profiles
+- Configurable named PromptProfile presets
+- Enabled and disabled prompt-component configuration
+- Canonical prompt-component normalization
+- Duplicate prompt-component removal
+- Enabled/disabled component conflict detection
+- Strict unknown-component validation
+- Permissive extension-component handling with structured warnings
+- Optional base-profile inheritance
+- Child-profile precedence over inherited configuration
+- Runtime enable and disable component overrides
+- Runtime override conflict detection
+- Non-mutating PromptProfile resolution
+- Structured ResolvedPromptProfile output
+- Character prompt-component support
+- Location prompt-component support
+- Camera prompt-component support
+- Performance prompt-component support
+- Lighting prompt-component support
+- Mood prompt-component support
+- Dialogue-or-vocals prompt-component support
+- Continuity prompt-component support
+- Scene negative-constraint prompt-component support
+- Global Constraints prompt-component support
+- JSON-serializable custom prompt configuration
+- Recursive nested custom-configuration merging
+- Runtime custom-configuration overrides
+- Public Prompt Profiles API
+- Optional PromptProfile resolution in complete project JSON exports
+- Backward compatibility with the existing cinematic prompt builder
+- Coexistence with DurationPolicy, ContinuityProfile, and GlobalConstraints
+- Automated Prompt Profiles unit and project integration tests
   
 ### Fixed
 
