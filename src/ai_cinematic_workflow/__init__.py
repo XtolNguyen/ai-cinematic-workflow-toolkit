@@ -3,10 +3,10 @@ AI Cinematic Workflow Toolkit.
 
 Open-source tools for structured cinematic scene planning,
 basic and advanced continuity validation, project-wide global
-constraints, configurable duration policies, timeline planning,
-music-video structure and timing validation, lip-sync policy
-resolution, prompt construction, project management, workflow
-processing, and portable export.
+constraints, reusable prompt profiles, configurable duration
+policies, timeline planning, music-video structure and timing
+validation, lip-sync policy resolution, prompt construction,
+project management, workflow processing, and portable export.
 """
 
 from .continuity import (
@@ -68,6 +68,14 @@ from .prompt_builder import (
     PromptResult,
     build_cinematic_prompt,
 )
+from .prompt_profiles import (
+    VALID_PROMPT_COMPONENTS,
+    PromptProfile,
+    PromptProfileIssue,
+    ResolvedPromptProfile,
+    normalize_prompt_component,
+    resolve_prompt_profile,
+)
 from .scene import Camera, Scene
 from .timeline import (
     TimelineEntry,
@@ -89,6 +97,12 @@ __all__ = [
     "CinematicProject",
     "PromptResult",
     "build_cinematic_prompt",
+    "PromptProfile",
+    "PromptProfileIssue",
+    "ResolvedPromptProfile",
+    "VALID_PROMPT_COMPONENTS",
+    "normalize_prompt_component",
+    "resolve_prompt_profile",
     "ContinuityIssue",
     "compare_scenes",
     "continuity_report",
